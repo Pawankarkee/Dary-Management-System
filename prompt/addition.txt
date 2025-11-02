@@ -1,0 +1,1565 @@
+Dairify is a comprehensive dairy shop management system that seamlessly handles both dairy production/procurement operations and retail shop management with real-time inventory tracking, financial management, and multi-branch support.
+
+🎯 Unique Selling Points
+
+Dual-Mode Operation: Seamlessly manage dairy production AND retail shop in one system
+Offline-First Architecture: Work without internet, auto-sync when online
+Milk-Specific Features: Track milk quality, fat content, supplier rates per liter
+Smart Inventory: Auto-deduct from stock on sales, low-stock alerts
+Advanced Payment Tracking: Advances, credit, discounts, partial payments
+Multi-Branch Support: Centralized control with branch-wise reports
+Beautiful Modern UI: Smooth animations, intuitive navigation, delightful UX
+
+
+📋 Complete Feature Modules
+1. Dashboard
+
+Real-time sales overview
+Today's milk collection summary
+Pending payments alert
+Low stock items
+Quick action buttons
+Branch-wise performance graphs
+
+2. Milk Management
+
+Milk Purchase/Collection
+
+Supplier-wise daily collection
+Morning/Evening shift tracking
+Fat/SNF percentage recording
+Rate calculation (per liter/kg)
+Quality grade tracking
+Auto-generate collection slips
+
+
+Milk Stock
+
+Current available stock
+Processing/Raw milk separation
+Expiry tracking
+Usage/sales deduction
+
+
+
+3. Inventory Management
+
+General Stock
+
+Dairy products (butter, cheese, yogurt, paneer)
+Other goods (groceries, beverages, snacks)
+Category-wise organization
+Barcode/SKU support
+
+
+Stock Operations
+
+Add new items
+Stock IN (purchases)
+Stock OUT (sales/wastage)
+Stock transfer between branches
+Stock adjustment with reason
+
+
+Stock Reports
+
+Current stock levels
+Stock movement history
+Fast/slow moving items
+Expiry alerts
+Reorder level alerts
+
+
+
+4. Sales Management
+
+POS (Point of Sale)
+
+Fast billing interface
+Barcode scanner support
+Mixed cart (dairy + other items)
+Multiple payment methods
+Invoice generation with logo
+
+
+Sales Records
+
+Daily/weekly/monthly sales
+Item-wise sales analysis
+Customer-wise purchase history
+Return/exchange management
+Discount tracking
+
+
+
+5. Purchase Management
+
+Supplier Management
+
+Supplier profiles (contact, address, bank details)
+Rate cards per item
+Credit limit tracking
+Performance rating
+
+
+Purchase Orders
+
+Create PO for suppliers
+Track delivery status
+Quality check on receipt
+
+
+Purchase Bills
+
+Record supplier invoices
+Match with PO
+Track due dates
+Attach bill images
+
+
+
+6. Payment Management
+
+Advance Payments
+
+Customer advances for bulk orders
+Supplier advances
+Adjust against invoices
+
+
+Bill Payments
+
+Pay supplier bills
+Payment history
+Outstanding tracking
+
+
+Payment Received
+
+Customer payments (cash/UPI/card/cheque)
+Credit settlement
+Payment receipts generation
+
+
+Discount Management
+
+Promotional discounts
+Bulk purchase discounts
+Customer loyalty discounts
+Discount impact reports
+
+
+
+7. Financial Management
+
+Trial Balance (T/Bal)
+
+Real-time accounting
+Debit/Credit summary
+Account-wise balance
+
+
+Accounts Ledger (A/C)
+
+Customer ledgers
+Supplier ledgers
+Expense ledgers
+Bank accounts
+
+
+Expenses
+
+Daily operational expenses
+Category-wise (rent, salary, electricity, transport)
+Recurring expense templates
+Expense approval workflow
+
+
+
+8. Manufacturing/Processing
+
+Manufacture Items
+
+Convert raw milk to products
+Recipe/formula management
+Batch tracking
+Yield calculation
+Quality parameters
+Production cost calculation
+
+
+
+9. Multi-Branch Management
+
+Branches
+
+Add/manage multiple locations
+Branch-wise inventory
+Branch-wise staff
+Inter-branch stock transfer
+Consolidated reporting
+
+
+
+10. User Management
+
+Profiles/Roles
+
+Admin (full access)
+Manager (branch-level)
+Cashier (POS only)
+Accountant (finance only)
+Dairy operator (milk collection)
+Role-based permissions
+
+
+Staff Management
+
+Employee profiles
+Attendance tracking
+Salary management
+Performance tracking
+
+
+
+11. Reports & Analytics
+
+Sales Reports
+
+Daily sales summary
+Product-wise performance
+Profit margin analysis
+Customer purchase patterns
+
+
+Stock Reports
+
+Inventory valuation
+Dead stock identification
+Stock turnover ratio
+
+
+Financial Reports
+
+Profit & Loss statement
+Cash flow statement
+Outstanding reports
+Tax reports (GST ready)
+
+
+Milk Reports
+
+Collection summary (supplier-wise)
+Fat/SNF analysis
+Payment due to suppliers
+Milk rate fluctuation
+
+
+
+12. Additional Features
+
+Notifications
+
+Low stock alerts
+Payment due reminders
+Expiry alerts
+Daily sales summary
+
+
+Backup & Sync
+
+Auto-backup to cloud
+Manual backup option
+Restore from backup
+Sync conflict resolution
+
+
+Settings
+
+Business profile
+Tax configuration (GST)
+Receipt customization
+Printer settings
+Language preferences
+Theme customization
+
+
+
+
+🛠️ Technical Architecture
+Frontend (Flutter)
+lib/
+├── core/
+│   ├── constants/
+│   ├── themes/
+│   ├── utils/
+│   └── config/
+├── data/
+│   ├── models/
+│   ├── repositories/
+│   └── local_db/ (Hive)
+├── domain/
+│   ├── entities/
+│   └── usecases/
+├── presentation/
+│   ├── screens/
+│   ├── widgets/
+│   └── providers/ (Riverpod/Bloc)
+└── services/
+    ├── api_service/
+    ├── sync_service/
+    └── auth_service/
+```
+
+### **Backend (Laravel)**
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   ├── Middleware/
+│   └── Requests/
+├── Models/
+├── Services/
+│   ├── SyncService
+│   ├── ReportService
+│   └── NotificationService
+└── Repositories/
+
+database/
+├── migrations/
+└── seeders/
+```
+
+### **Database Schema Highlights**
+- **PostgreSQL** for relational data
+- Optimized indexing for fast queries
+- Soft deletes for audit trail
+- Timestamp tracking (created_at, updated_at, synced_at)
+
+---
+
+## 🎨 UI/UX Design Principles
+
+### **Color Scheme**
+- Primary: Fresh Milk White (#FFFFFF)
+- Secondary: Dairy Blue (#4A90E2)
+- Accent: Butter Gold (#FFD700)
+- Success: Fresh Green (#4CAF50)
+- Warning: Caution Amber (#FFA726)
+- Error: Alert Red (#EF5350)
+
+### **Design Elements**
+- **Smooth Animations**: Hero transitions, fade-ins, micro-interactions
+- **Intuitive Navigation**: Bottom nav for main modules, floating action buttons
+- **Visual Feedback**: Loading states, success/error messages, haptic feedback
+- **Consistent Icons**: Material/Cupertino icons
+- **Responsive Cards**: Shadow elevations, rounded corners
+- **Data Visualization**: Charts for trends (FL Chart library)
+
+### **User Experience**
+- **Onboarding**: 3-step business setup wizard
+- **Quick Actions**: Swipe gestures, long-press menus
+- **Search Everywhere**: Global search for products, customers, invoices
+- **Shortcuts**: Recent items, favorites, quick bill
+- **Empty States**: Helpful illustrations when no data
+- **Error Handling**: Clear messages with resolution steps
+
+---
+
+## 🔒 Security Features
+
+1. **Authentication**
+   - JWT token-based auth
+   - Biometric login (fingerprint/face)
+   - Session timeout
+   - Device binding
+
+2. **Authorization**
+   - Role-based access control (RBAC)
+   - Permission-level restrictions
+   - Audit logs for sensitive actions
+
+3. **Data Security**
+   - Encrypted local database (Hive encryption)
+   - HTTPS for all API calls
+   - SQL injection prevention
+   - XSS protection
+
+4. **Business Security**
+   - Pin/password for transactions
+   - Daily cash reconciliation
+   - Approval workflows
+   - Data backup redundancy
+
+---
+
+## 📱 Offline-First Implementation
+
+### **Sync Strategy**
+1. **Local First**: All operations save to Hive immediately
+2. **Background Sync**: Auto-sync when internet detected
+3. **Conflict Resolution**: Last-write-wins with timestamp
+4. **Sync Queue**: Failed syncs retry automatically
+5. **Sync Status**: Visual indicator (online/offline/syncing)
+
+### **Offline Capabilities**
+- ✅ Create sales invoices
+- ✅ Record milk collection
+- ✅ Add expenses
+- ✅ Update inventory
+- ✅ View all reports
+- ✅ Search and filter data
+- ❌ Add new branches (requires online)
+- ❌ Generate cloud backup
+
+---
+
+## 🚀 Development Roadmap
+
+### **Phase 1: MVP (2-3 months)**
+- Basic POS with inventory
+- Milk collection module
+- Sales & purchase tracking
+- Simple reports
+- Single branch
+
+### **Phase 2: Advanced (1-2 months)**
+- Multi-branch support
+- Advanced reports & analytics
+- Manufacturing module
+- Payment management
+- Supplier portal
+
+### **Phase 3: Enterprise (1-2 months)**
+- Mobile app for suppliers
+- Customer mobile app
+- WhatsApp integration
+- AI-based demand forecasting
+- Advanced analytics dashboard
+
+---
+
+## 📝 Context Engineering Prompt Template
+```
+You are an expert Flutter developer building Dairify, a comprehensive dairy 
+shop management system. The system must handle:
+
+CONTEXT:
+- Offline-first architecture using Hive for local storage
+- Laravel backend with PostgreSQL for cloud sync
+- Multi-branch dairy + retail shop operations
+- Real-time inventory tracking and financial management
+
+REQUIREMENTS:
+1. Write clean, maintainable Dart code following Flutter best practices
+2. Implement proper state management (Riverpod/Bloc)
+3. Ensure offline functionality with smart sync logic
+4. Create responsive UI that works on mobile/tablet
+5. Add proper error handling and loading states
+6. Include input validation and security checks
+7. Write modular, reusable widgets
+8. Optimize for performance (lazy loading, pagination)
+9. Add proper comments for complex logic
+10. Follow Material Design 3 guidelines
+
+CURRENT TASK:
+[Specify the feature/module you're building]
+
+CONSTRAINTS:
+- Must work offline seamlessly
+- Response time < 2 seconds for all operations
+- Support up to 10,000 products
+- Handle concurrent users in multi-branch setup
+
+Please provide:
+1. Complete working code
+2. Explanation of key decisions
+3. Potential edge cases to handle
+4. Testing recommendations
+
+💡 Additional Recommendations
+Must-Have Flutter Packages
+yamldependencies:
+  # State Management
+  flutter_riverpod: ^2.5.1
+  
+  # Local Database
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  
+  # Network
+  dio: ^5.4.0
+  connectivity_plus: ^5.0.2
+  
+  # UI
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.5.0
+  shimmer: ^3.0.0
+  
+  # Charts
+  fl_chart: ^0.66.0
+  
+  # Utilities
+  intl: ^0.19.0
+  uuid: ^4.3.3
+  path_provider: ^2.1.2
+  
+  # PDF
+  pdf: ^3.10.8
+  
+  # Security
+  flutter_secure_storage: ^9.0.0
+  local_auth: ^2.2.0
+Performance Tips
+
+Use const constructors wherever possible
+Implement pagination for large lists
+Lazy load images
+Use ListView.builder instead of ListView
+Cache network images
+Debounce search inputs
+Use isolates for heavy computations
+
+
+🎯 Success Metrics
+
+User Experience: < 3 clicks to complete common tasks
+Performance: App launch < 3 seconds
+Reliability: 99.9% uptime for online features
+Offline: 100% feature availability offline
+Sync Speed: < 5 seconds for typical day's data
+Security: Zero data breaches
+User Satisfaction: > 4.5/5 rating
+
+
+Ready to build Dairify? Let's create something amazing! 🚀
+Would you like me to start creating specific modules or screens for you? I can generate:
+
+Complete database schema
+Flutter UI screens (login, dashboard, POS, etc.)
+Laravel API endpoints
+Sync logic implementation
+Specific feature modules
+
+Let me know where you'd like to begin! 🥛RetryPKcan you make a prompt to create a logo for this projects🎨 Dairify Logo Design Prompt
+Professional Logo Design Brief
+
+Project Name: Dairify
+Tagline Options:
+
+"Smart Dairy, Smarter Business"
+"Your Dairy, Simplified"
+"Fresh Management, Fresh Results"
+
+
+Logo Design Prompt for AI/Designer:
+Create a modern, professional logo for "Dairify" - a comprehensive dairy 
+management system software.
+
+BRAND IDENTITY:
+- Industry: Dairy Shop Management & Technology
+- Target Audience: Dairy shop owners, milk collection centers, dairy farmers
+- Brand Personality: Trustworthy, Modern, Efficient, Clean, Professional
+- Use Case: Mobile app, web dashboard, invoice prints, business cards
+
+VISUAL STYLE:
+- Style: Modern, Minimalist, Tech-forward with dairy elements
+- Mood: Fresh, Professional, Reliable, Innovative
+- Feel: Clean, Sophisticated, Approachable
+
+COLOR PALETTE (Choose combination):
+Option 1: 
+- Primary: Fresh Milk White (#FFFFFF)
+- Secondary: Dairy Blue (#4A90E2 or #2196F3)
+- Accent: Butter Gold (#FFD700 or #FFC107)
+
+Option 2:
+- Primary: Clean White (#FFFFFF)
+- Secondary: Fresh Green (#4CAF50)
+- Accent: Cream (#FFF8DC)
+
+Option 3:
+- Primary: Deep Blue (#1565C0)
+- Secondary: Pure White (#FFFFFF)
+- Accent: Orange (#FF9800)
+
+DESIGN ELEMENTS TO INCLUDE:
+1. A milk drop or dairy-related symbol (subtle, not cliché)
+2. Tech/digital elements (circuit lines, pixel, or data visualization)
+3. Typography: Bold, modern sans-serif for "Dairify"
+4. Optional: Abstract cow silhouette or milk container outline
+5. Consider: Infinity symbol or circular flow (representing continuous cycle)
+
+DESIGN VARIATIONS NEEDED:
+1. Full logo with icon + text
+2. Icon-only version (app icon)
+3. Text-only version (horizontal)
+4. Monochrome version (black/white)
+
+TECHNICAL REQUIREMENTS:
+- Vector format (scalable)
+- Works well in small sizes (app icon 512x512px)
+- Works in large sizes (billboard, storefront)
+- Readable in black & white
+- Clear at 16x16px (favicon)
+- No gradients in primary version (optional in alternate)
+
+LOGO CONCEPT IDEAS:
+Concept 1: "Digital Drop"
+- Stylized milk drop integrated with digital pixels or circuit lines
+- Modern sans-serif "Dairify" text
+- Minimalist, tech-forward
+
+Concept 2: "Dairy Flow"
+- Abstract circular flow showing milk collection to management
+- Infinity loop suggesting continuous operations
+- Clean, professional typography
+
+Concept 3: "Smart Dairy Badge"
+- Shield or badge shape with milk drop inside
+- Represents security and trust
+- Modern tech accents
+
+Concept 4: "Connected Dairy"
+- Network nodes forming a milk bottle/drop shape
+- Emphasizes connectivity and system integration
+- Futuristic feel
+
+WHAT TO AVOID:
+- Overly cartoonish cow illustrations
+- Cliché barn or farm imagery
+- Too many colors (keep it 2-3 colors max)
+- Complex details that don't scale down
+- Generic milk bottle shapes
+- Outdated or rustic farm aesthetics
+
+INSPIRATION KEYWORDS:
+Technology, Fresh, Digital, Clean, Modern, Efficient, Smart, Connected, 
+Innovative, Trustworthy, Professional, Scalable, Data-driven
+
+OUTPUT FORMAT:
+- Primary logo: Full color on white background
+- Secondary: White version on colored background
+- App icon: Square format with padding
+- Favicon: Simplified 16x16px version
+- File formats: SVG (vector), PNG (transparent), JPG
+
+ADDITIONAL NOTES:
+The logo should work equally well on:
+- Mobile app icon
+- Web browser tab (favicon)
+- Invoice letterhead
+- Business cards
+- Storefront signage
+- Social media profiles
+- T-shirts/merchandise
+```
+
+---
+
+## **Alternative Prompt (For Midjourney/DALL-E Style)**
+```
+Modern minimalist logo for "Dairify" dairy management software, 
+featuring a stylized milk drop merged with digital circuit lines, 
+dairy blue (#4A90E2) and butter gold (#FFD700) color scheme, 
+clean sans-serif typography, professional tech aesthetic, 
+vector style, flat design, white background, 
+corporate branding, scalable icon, --ar 1:1 --style modern --v 6
+```
+
+---
+
+## **Logo Mockup Variations to Request:**
+
+### **1. Primary Logo (Full Version)**
+- Icon on left + "Dairify" text on right
+- Color version with tagline below
+
+### **2. App Icon (Square)**
+- Icon only
+- Centered in square
+- Padding for iOS/Android requirements
+
+### **3. Horizontal Lockup**
+- Icon + text in single line
+- For headers and navigation bars
+
+### **4. Vertical Lockup**
+- Icon on top
+- Text below
+- For social media profiles
+
+### **5. Monochrome Versions**
+- All black (for printing)
+- All white (for dark backgrounds)
+- Grayscale
+
+### **6. Favicon**
+- 16x16px simplified icon
+- High contrast
+- Recognizable at tiny size
+
+---
+
+## **Brand Asset Checklist:**
+
+Once logo is created, ensure you have:
+
+- [ ] Full color logo (SVG, PNG)
+- [ ] White version (transparent PNG)
+- [ ] Black version (transparent PNG)
+- [ ] App icon (512x512px, 1024x1024px)
+- [ ] Favicon (16x16px, 32x32px, ICO format)
+- [ ] Social media kit (Facebook, Instagram, LinkedIn covers)
+- [ ] Email signature version
+- [ ] Letterhead version
+- [ ] Business card layout
+- [ ] Brand style guide (colors, fonts, spacing rules)
+
+---
+
+## **Typography Recommendations for Brand:**
+
+**Primary Font (Logo & Headers):**
+- Montserrat Bold
+- Poppins Bold
+- Inter Bold
+- Outfit Bold
+
+**Secondary Font (Body Text):**
+- Roboto Regular
+- Open Sans
+- Inter Regular
+- Outfit Regular
+
+---
+
+## **Logo Usage Guidelines (Once Created):**
+
+### **Do's:**
+✅ Maintain clear space around logo (minimum = height of icon)
+✅ Use approved color variations only
+✅ Scale proportionally (don't stretch)
+✅ Use on contrasting backgrounds
+✅ Use high-resolution files
+
+### **Don'ts:**
+❌ Don't change colors arbitrarily
+❌ Don't rotate or skew the logo
+❌ Don't add effects (shadows, glows, outlines)
+❌ Don't place on busy backgrounds
+❌ Don't recreate or modify the logo
+
+---
+
+## **Quick Logo Generator Tools (If Needed Fast):**
+
+1. **Canva Pro** - Easy templates
+2. **Looka.com** - AI-powered logo maker
+3. **Hatchful by Shopify** - Free logo generator
+4. **Tailor Brands** - AI logo design
+5. **Fiverr/99designs** - Hire professional designers
+
+---
+
+## **Professional Designer Brief (If Hiring):**
+```
+PROJECT: Dairify Logo Design
+
+DELIVERABLES:
+- 3 initial concept directions
+- 2 rounds of revisions
+- Final files in all formats (AI, SVG, PNG, JPG, PDF)
+- Brand style guide (1-page)
+- App icon variations
+- Social media kit
+
+TIMELINE: 7-10 days
+BUDGET: [Your budget]
+
+INDUSTRY: Dairy Management SaaS
+TARGET: Small to medium dairy shop owners
+PLATFORM: Mobile app + Web dashboard
+
+KEY MESSAGE: Modern technology meeting traditional dairy business
+COMPETITOR ANALYSIS: [Link similar apps if found]
+
+Color Psychology for Dairify:
+Blue (#4A90E2):
+
+Trust, reliability, professionalism
+Common in business software
+Conveys stability and security
+
+White (#FFFFFF):
+
+Cleanliness, purity (dairy connection)
+Simplicity, clarity
+Modern, minimalist
+
+Gold/Yellow (#FFD700):
+
+Premium quality
+Warmth, optimism
+Butter/cream association
+
+Green (Alternative):
+
+Fresh, organic, natural
+Growth, prosperity
+Health and wellness
+
+
+Ready to create your logo! 🎨
+Would you like me to:
+
+Generate a logo design using code (SVG artifact)
+Create mockups showing logo in different contexts
+Design app icon variations
+Create a brand style guide document
+
+Let me know! 🚀RetryPKi want this what in there menu have 
+in our projects ,
+add missing thihgs with well fuction 
+all tyhings work properly and wellcard and fonts and other things should be small 
+do not make same same things dublicates 
+if its has already in the app then 
+just add the best features and work properly.
+provide me a context engeering prompt easy to use , code should be responsive
+make for me best prompt2 / 2🎯 Complete Dairify Feature Analysis & Context Engineering Prompt
+📊 Feature Analysis from Reference Dashboard
+Features in Reference System:
+
+✅ Farmers (Suppliers)
+✅ Farmer Advance
+✅ Collection Center
+✅ Collection (Milk Collection)
+✅ Set & Fats (Rate Setting)
+✅ Items (Products)
+✅ Sell Item (POS/Sales)
+✅ Products
+✅ Production Process (Manufacturing)
+✅ Expenses
+✅ Suppliers
+✅ Supplier Bills
+✅ Reports
+✅ Party Ledgers
+
+Missing Critical Features to Add:
+Financial Management:
+
+💰 Payment Received - Customer payment collection
+💳 Bill Payments - Pay supplier invoices
+📊 Trial Balance - Complete accounting overview
+🧾 Accounts Ledger - Detailed account statements
+💸 Discount Management - Apply & track discounts
+🏦 Bank Accounts - Manage multiple bank accounts
+💵 Petty Cash - Daily cash management
+
+Inventory & Stock:
+
+📦 Purchase Orders - Create POs before receiving stock
+🔄 Stock Transfer - Between branches/locations
+⚠️ Stock Alerts - Low stock notifications
+📉 Stock Adjustment - Handle wastage/damage
+🏷️ Barcode System - Quick product scanning
+📊 Stock Valuation - FIFO/LIFO/Weighted Average
+
+Customer Management:
+
+👥 Customer Management - Customer profiles & history
+💳 Customer Credit - Credit limit & tracking
+🎁 Loyalty Program - Reward regular customers
+📱 Customer App - Mobile ordering
+
+Branch & User Management:
+
+🏢 Multi-Branch - Manage multiple locations
+👤 User Roles & Permissions - Access control
+📊 Branch Performance - Compare branches
+🔄 Inter-branch Settlement - Transfer accounting
+
+Advanced Features:
+
+📧 SMS/Email Integration - Send receipts & alerts
+📄 Invoice Templates - Customizable bills
+🔔 Notifications Center - All alerts in one place
+📱 WhatsApp Integration - Share invoices
+🖨️ Thermal Printer - Receipt printing
+📊 Dashboard Analytics - Visual insights
+🔍 Advanced Search - Global search functionality
+📅 Date Range Filters - Custom reporting periods
+🌓 Dark Mode - Eye-friendly interface
+🌐 Multi-language - Regional language support
+💾 Auto Backup - Scheduled backups
+🔐 Data Security - Encryption & PIN protection
+
+
+🎯 MASTER CONTEXT ENGINEERING PROMPT
+markdown# DAIRIFY DEVELOPMENT PROMPT - COMPREHENSIVE DAIRY MANAGEMENT SYSTEM
+
+## SYSTEM OVERVIEW
+You are building Dairify, a professional dairy shop management system with 
+offline-first architecture. The system must be production-ready, highly 
+optimized, and user-friendly.
+
+---
+
+## TECH STACK
+- **Frontend**: Flutter 3.x (Dart)
+- **Offline Database**: Hive (encrypted)
+- **Backend**: Laravel 10.x (PHP 8.2+)
+- **Online Database**: PostgreSQL 15+
+- **State Management**: Riverpod 2.x
+- **API**: RESTful with JWT authentication
+
+---
+
+## DESIGN REQUIREMENTS
+
+### UI/UX Standards
+- **Design System**: Material Design 3
+- **Color Scheme**: 
+  - Primary: #D32F2F (Red) - matches reference
+  - Secondary: #FFFFFF (White)
+  - Accent: #FFB300 (Gold for highlights)
+  - Background: #F5F5F5
+  - Text: #212121
+  
+- **Typography**: 
+  - Primary Font: Roboto/SF Pro
+  - Sizes: Title: 18-20sp, Body: 14-16sp, Caption: 12sp
+  - Weight: Medium for headers, Regular for body
+  
+- **Component Sizes**:
+  - Cards: Compact, max 120x120dp for dashboard tiles
+  - Icons: 32-40dp with 8dp internal padding
+  - Buttons: Height 48dp (touch target)
+  - List items: 56-72dp height
+  - Bottom nav: 56dp height
+
+- **Layout**:
+  - Responsive grid (2-4 columns based on screen)
+  - 16dp standard spacing
+  - 8dp compact spacing
+  - Consistent card elevation (2-4dp)
+
+### Performance Requirements
+- App launch: < 2 seconds
+- Screen transitions: < 300ms
+- List scrolling: 60 FPS
+- API response handling: < 1 second
+- Offline operations: Instant
+- Sync time: < 5 seconds for typical data
+- Image loading: Progressive with placeholder
+- Search results: < 500ms
+
+---
+
+## CORE MODULES & FEATURES
+
+### 1. DASHBOARD
+**Components**:
+- Grid layout (2 columns on mobile, 4 on tablet)
+- Quick stats cards (sales, collection, pending payments, stock alerts)
+- Date filter (Today, Week, Month, Custom)
+- Branch selector (if multi-branch)
+- Quick action FAB (+ button)
+
+**Tiles** (Match reference red cards):
+1. Farmers/Suppliers - Navigate to supplier list
+2. Farmer Advance - Record advance payments
+3. Collection Center - Milk collection entry
+4. Collection - View collection records
+5. Set & Fats - Configure milk rates
+6. Items - Product catalog
+7. Sell Item - POS/Billing screen
+8. Products - Product management
+9. Production Process - Manufacturing module
+10. Expenses - Expense entry
+11. Suppliers - Supplier management
+12. Supplier Bills - Bill tracking
+13. Reports - Analytics dashboard
+14. Party Ledgers - Account statements
+15. **NEW**: Payment Received
+16. **NEW**: Bill Payments
+17. **NEW**: Customer Management
+18. **NEW**: Stock Transfer
+19. **NEW**: Accounts Ledger
+20. **NEW**: Notifications
+
+**Code Pattern**:
+```dart
+GridView.builder(
+  padding: EdgeInsets.all(16),
+  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 2,
+    childAspectRatio: 1.0,
+    crossAxisSpacing: 12,
+    mainAxisSpacing: 12,
+  ),
+  itemBuilder: (context, index) => DashboardCard(...)
+)
+```
+
+---
+
+### 2. MILK COLLECTION MODULE
+
+**Features**:
+- Morning/Evening shift toggle
+- Supplier dropdown (searchable)
+- Quantity input (liters/kg)
+- Fat % and SNF % input
+- Auto-calculate rate based on fat content
+- Current rate display
+- Print collection slip
+- Photo capture (optional - milk sample)
+
+**Data Model**:
+```dart
+class MilkCollection {
+  String id;
+  String supplierId;
+  DateTime date;
+  String shift; // 'morning' | 'evening'
+  double quantity;
+  double fatPercent;
+  double snfPercent;
+  double ratePerUnit;
+  double totalAmount;
+  bool isSynced;
+}
+```
+
+**Validation**:
+- Quantity: 0.1 - 999.9 liters
+- Fat %: 0.0 - 15.0
+- SNF %: 0.0 - 12.0
+- Prevent duplicate entries (same supplier + date + shift)
+
+---
+
+### 3. POINT OF SALE (SELL ITEM)
+
+**Features**:
+- Fast product search (by name/code/barcode)
+- Shopping cart with quantity adjustment
+- Mixed cart (dairy + grocery items)
+- Stock availability check
+- Multiple payment methods (Cash/UPI/Card/Credit)
+- Discount application (%, fixed amount)
+- Customer selection (optional)
+- Print/Share invoice
+- Auto-deduct from inventory
+
+**UI Layout**:
+- Top: Search bar + Cart icon (badge count)
+- Middle: Product grid or category tabs
+- Bottom: Cart summary (sticky)
+- FAB: Checkout button
+
+**Workflow**:
+1. Search/Select product → Add to cart
+2. Adjust quantity → Update total
+3. Apply discount (if any)
+4. Select payment → Complete sale
+5. Generate invoice → Print/Share
+6. Auto-sync to backend
+
+---
+
+### 4. INVENTORY MANAGEMENT
+
+**Stock In/Out**:
+- Purchase entry (from supplier)
+- Sales deduction (automatic from POS)
+- Stock adjustment (wastage/damage with reason)
+- Transfer between branches
+- Return to supplier
+
+**Stock Reports**:
+- Current stock levels (product-wise)
+- Low stock alerts (< reorder level)
+- Stock movement history
+- Expiry tracking (FEFO)
+- Dead stock identification
+- Stock valuation report
+
+**Features**:
+- Barcode scanning
+- Batch/lot tracking
+- Expiry date management
+- Reorder level alerts
+- Multi-unit support (kg, liter, piece, box)
+
+---
+
+### 5. FINANCIAL MANAGEMENT
+
+**Accounts Structure**:
+- Chart of Accounts (Assets, Liabilities, Income, Expenses)
+- Customer Ledgers
+- Supplier Ledgers
+- Bank Accounts
+- Cash Account
+
+**Payment Received**:
+- Customer selection
+- Payment method (Cash/Bank/UPI)
+- Amount with reference number
+- Adjust against pending invoices
+- Generate receipt
+
+**Bill Payments**:
+- Supplier selection
+- Select pending bills
+- Payment method
+- Partial payment support
+- Payment voucher generation
+
+**Trial Balance**:
+- Real-time debit/credit summary
+- Account-wise balance
+- Date range filter
+- Export to Excel/PDF
+
+---
+
+### 6. REPORTS & ANALYTICS
+
+**Dashboard Charts**:
+- Sales trend (line chart)
+- Top products (bar chart)
+- Collection summary (milk suppliers)
+- Payment overview (pie chart)
+
+**Report Types**:
+1. **Sales Reports**:
+   - Daily/Weekly/Monthly summary
+   - Product-wise sales
+   - Customer-wise sales
+   - Profit margin analysis
+   
+2. **Milk Reports**:
+   - Collection summary (supplier-wise)
+   - Fat average calculation
+   - Payment due to suppliers
+   - Rate comparison
+   
+3. **Stock Reports**:
+   - Current inventory value
+   - Fast/slow moving items
+   - Expiry alerts
+   - Stock movement
+   
+4. **Financial Reports**:
+   - Profit & Loss
+   - Outstanding (receivables/payables)
+   - Expense breakdown
+   - Cash flow statement
+
+**Export Options**: PDF, Excel, Print
+
+---
+
+### 7. SUPPLIER/FARMER MANAGEMENT
+
+**Supplier Profile**:
+- Basic info (name, contact, address)
+- Milk rate card (fat-wise rates)
+- Bank details (for payments)
+- Credit limit
+- Outstanding balance
+- Performance rating
+
+**Advance Management**:
+- Record advance payment
+- Adjust against milk collection
+- Advance history
+- Balance tracking
+
+**Supplier Bills**:
+- Generate monthly bill (milk collection summary)
+- Payment status tracking
+- Bill settlement
+
+---
+
+### 8. PRODUCTION/MANUFACTURING
+
+**Process**:
+- Select raw material (raw milk)
+- Select output product (butter, cheese, paneer)
+- Enter quantity to produce
+- Auto-calculate raw material consumption
+- Track production cost
+- Update finished goods inventory
+
+**Recipe Management**:
+- Define formulas (input → output ratio)
+- Calculate yield percentage
+- Track wastage
+- Cost calculation
+
+---
+
+### 9. EXPENSE MANAGEMENT
+
+**Expense Categories**:
+- Rent
+- Salary/Wages
+- Electricity/Utilities
+- Transport/Fuel
+- Maintenance
+- Marketing
+- Miscellaneous
+
+**Features**:
+- Quick expense entry
+- Category-wise tracking
+- Recurring expense templates
+- Approval workflow (manager approval)
+- Receipt attachment (photo)
+- Monthly budget tracking
+
+---
+
+### 10. MULTI-BRANCH SUPPORT
+
+**Branch Management**:
+- Add/edit branch details
+- Assign staff to branches
+- Branch-wise inventory
+- Inter-branch stock transfer
+- Consolidated reporting
+
+**Branch Dashboard**:
+- Switch branch (dropdown)
+- Branch-specific data view
+- Transfer requests
+- Performance comparison
+
+---
+
+### 11. USER & ROLES
+
+**Role-Based Access**:
+1. **Admin**: Full access
+2. **Manager**: Branch-level access
+3. **Cashier**: POS + Sales only
+4. **Accountant**: Financial modules
+5. **Dairy Operator**: Milk collection only
+
+**Permissions**:
+- View/Add/Edit/Delete per module
+- Approval rights
+- Report access
+- Settings access
+
+---
+
+## OFFLINE-FIRST ARCHITECTURE
+
+### Sync Strategy
+```dart
+class SyncService {
+  // 1. Save to Hive immediately
+  Future saveLocal(dynamic data);
+  
+  // 2. Add to sync queue
+  Future addToQueue(SyncTask task);
+  
+  // 3. Background sync when online
+  Future syncToServer();
+  
+  // 4. Handle conflicts (last-write-wins)
+  Future resolveConflicts();
+}
+```
+
+### Sync Priority
+1. High: Sales, Payments, Collection
+2. Medium: Expenses, Stock adjustments
+3. Low: Reports, Settings
+
+### Conflict Resolution
+- Timestamp comparison
+- Server wins for master data
+- Local wins for transactions (with validation)
+
+---
+
+## CODE STANDARDS
+
+### Naming Conventions
+- Classes: PascalCase (e.g., `MilkCollectionScreen`)
+- Variables: camelCase (e.g., `totalAmount`)
+- Constants: UPPER_SNAKE_CASE (e.g., `MAX_QUANTITY`)
+- Files: snake_case (e.g., `milk_collection_screen.dart`)
+
+### Project Structure
+```
+lib/
+├── core/
+│   ├── constants/
+│   ├── themes/
+│   ├── utils/
+│   └── config/
+├── data/
+│   ├── models/
+│   ├── repositories/
+│   └── local_db/
+├── domain/
+│   ├── entities/
+│   └── usecases/
+├── presentation/
+│   ├── screens/
+│   ├── widgets/
+│   └── providers/
+└── services/
+    ├── api_service.dart
+    ├── sync_service.dart
+    └── auth_service.dart
+```
+
+### Code Quality
+- **Comments**: Explain WHY, not WHAT
+- **Error Handling**: Try-catch with user-friendly messages
+- **Validation**: Client-side + server-side
+- **Loading States**: Skeleton loaders, shimmer effects
+- **Empty States**: Helpful illustrations + call-to-action
+- **Null Safety**: Strict null safety enabled
+
+### Performance Optimization
+```dart
+// Use const constructors
+const Text('Hello');
+
+// Lazy loading
+ListView.builder() instead of ListView()
+
+// Pagination
+if (index == items.length - 1) loadMore();
+
+// Debouncing search
+Timer? _debounce;
+onSearchChanged(String query) {
+  _debounce?.cancel();
+  _debounce = Timer(Duration(milliseconds: 500), () {
+    performSearch(query);
+  });
+}
+
+// Cache images
+CachedNetworkImage()
+
+// Dispose controllers
+@override
+void dispose() {
+  controller.dispose();
+  super.dispose();
+}
+```
+
+---
+
+## SECURITY IMPLEMENTATION
+
+### Authentication
+```dart
+// JWT Token storage
+final secureStorage = FlutterSecureStorage();
+await secureStorage.write(key: 'auth_token', value: token);
+
+// Biometric auth
+final localAuth = LocalAuthentication();
+bool authenticated = await localAuth.authenticate(
+  localizedReason: 'Authenticate to access Dairify'
+);
+```
+
+### Data Encryption
+```dart
+// Encrypt Hive boxes
+final encryptionKey = Hive.generateSecureKey();
+await Hive.openBox('secure_data', 
+  encryptionCipher: HiveAesCipher(encryptionKey)
+);
+```
+
+### API Security
+- HTTPS only
+- JWT token in headers
+- Token refresh mechanism
+- Rate limiting
+- Input sanitization
+
+---
+
+## TESTING CHECKLIST
+
+### Unit Tests
+- [ ] Business logic functions
+- [ ] Data models
+- [ ] Repository methods
+- [ ] Validation functions
+
+### Widget Tests
+- [ ] UI components render correctly
+- [ ] User interactions work
+- [ ] Navigation flows
+- [ ] Form validations
+
+### Integration Tests
+- [ ] Complete user workflows
+- [ ] Offline functionality
+- [ ] Sync mechanism
+- [ ] Payment processing
+
+---
+
+## DEPLOYMENT CHECKLIST
+
+### Pre-launch
+- [ ] All features tested
+- [ ] Performance optimized
+- [ ] Security audit completed
+- [ ] Offline mode verified
+- [ ] Multi-device tested
+- [ ] User documentation ready
+- [ ] Backup system tested
+
+### App Store Requirements
+- [ ] Privacy policy
+- [ ] Terms of service
+- [ ] App screenshots (5-8)
+- [ ] App description
+- [ ] Demo video
+- [ ] Support contact
+
+---
+
+## DEVELOPMENT APPROACH
+
+When you receive a feature request:
+
+1. **Understand**: Clarify the requirement
+2. **Plan**: Break into smaller tasks
+3. **Code**: Write clean, documented code
+4. **Validate**: Add input validation
+5. **Test**: Handle edge cases
+6. **Optimize**: Ensure performance
+7. **Document**: Add inline comments
+
+---
+
+## RESPONSE FORMAT
+
+For each code generation request, provide:
+
+1. ✅ **Complete working code** (no placeholders)
+2. 📝 **Explanation** of key decisions
+3. ⚠️ **Edge cases** handled
+4. 🧪 **Testing recommendations**
+5. 🚀 **Performance considerations**
+6. 🔒 **Security notes** (if applicable)
+
+---
+
+## CURRENT TASK TEMPLATE
+
+When starting a new feature:
+
+**FEATURE**: [Name of feature]
+**MODULE**: [Dashboard/Sales/Inventory/etc.]
+**PRIORITY**: [High/Medium/Low]
+**DEPENDENCIES**: [List any dependent modules]
+**OFFLINE SUPPORT**: [Yes/No]
+
+**REQUIREMENTS**:
+1. [Requirement 1]
+2. [Requirement 2]
+
+**EXPECTED BEHAVIOR**:
+- [User action → System response]
+
+**UI SPECIFICATIONS**:
+- Colors: [Specific colors]
+- Layout: [Description]
+- Components: [List]
+
+Please provide complete implementation.
+
+---
+
+END OF CONTEXT PROMPT
+```
+
+---
+
+## 🎯 USAGE INSTRUCTIONS
+
+### How to Use This Prompt:
+
+1. **Copy the entire prompt** above
+2. **Paste into AI assistant** (Claude, GPT-4, etc.)
+3. **Add your specific request** at the end, for example:
+```
+Using the DAIRIFY DEVELOPMENT PROMPT above:
+
+CURRENT TASK: Create the Milk Collection Screen
+
+REQUIREMENTS:
+- Morning/Evening shift selector
+- Supplier dropdown (searchable)
+- Input fields for quantity, fat %, SNF %
+- Auto-calculate amount based on rate
+- Save to Hive database
+- Add to sync queue
+- Show success message
+
+Please provide complete Flutter code with Riverpod state management.
+```
+
+### Sample Requests You Can Make:
+```
+1. "Create the Dashboard screen with all 20 tiles"
+
+2. "Build the POS/Billing screen with product search and cart"
+
+3. "Implement the Milk Collection module with offline support"
+
+4. "Create the Payment Received screen with invoice adjustment"
+
+5. "Build the Stock Transfer feature between branches"
+
+6. "Implement the Reports dashboard with charts"
+
+7. "Create the Supplier Management CRUD operations"
+
+8. "Build the Sync Service with conflict resolution"
+
+9. "Implement user authentication with biometric support"
+
+10. "Create the Laravel API endpoints for milk collection"
+```
+
+---
+
+## 🚀 QUICK START EXAMPLE
+
+**To get started immediately, try this:**
+```
+Using the DAIRIFY DEVELOPMENT PROMPT:
+
+Create a Flutter app scaffold with:
+1. Bottom navigation (Dashboard, Sales, Reports, More)
+2. Dashboard screen with grid layout (2 columns)
+3. Sample dashboard tiles (Farmers, Collection, Sell Item, Reports)
+4. Use red theme (#D32F2F) matching the reference
+5. Implement basic routing
+6. Add a floating action button
+
+Make it production-ready with proper state management.
+

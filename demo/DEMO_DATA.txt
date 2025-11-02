@@ -1,0 +1,63 @@
+═══════════════════════════════════════════════════════════════════════════
+                         DEMO DATA QUICK REFERENCE
+═══════════════════════════════════════════════════════════════════════════
+
+Run: dart demo/add_demo_data.dart
+
+═══════════════════════════════════════════════════════════════════════════
+FARMERS TO ADD (10 total)
+═══════════════════════════════════════════════════════════════════════════
+
+No. | Name            | Village        | Phone       | Milk Type
+----|-----------------|----------------|-------------|----------
+ 1  | Rajesh Kumar    | Rampur         | 9876543210  | Cow
+ 2  | Suresh Patel    | Shivpur        | 9876543211  | Buffalo
+ 3  | Mahesh Singh    | Ganeshpur      | 9876543212  | Both
+ 4  | Dinesh Verma    | Haripur        | 9876543213  | Cow
+ 5  | Ganesh Sharma   | Govindpur      | 9876543214  | Buffalo
+ 6  | Vijay Yadav     | Mohanpur       | 9876543215  | Both
+ 7  | Ajay Reddy      | Krishna Nagar  | 9876543216  | Cow
+ 8  | Sanjay Nair     | Ram Nagar      | 9876543217  | Buffalo
+ 9  | Manoj Desai     | Laxmi Nagar    | 9876543218  | Both
+10  | Anil Joshi      | Durga Nagar    | 9876543219  | Cow
+
+═══════════════════════════════════════════════════════════════════════════
+MILK COLLECTIONS TO ADD (10 total)
+═══════════════════════════════════════════════════════════════════════════
+
+No. | Farmer          | Shift   | Quantity | FAT  | SNF
+----|-----------------|---------|----------|------|------
+ 1  | Rajesh Kumar    | Morning | 10.5 L   | 4.5% | 8.5%
+ 2  | Rajesh Kumar    | Evening | 12.0 L   | 4.2% | 8.3%
+ 3  | Suresh Patel    | Morning | 15.5 L   | 6.5% | 9.0%
+ 4  | Suresh Patel    | Evening | 14.0 L   | 6.8% | 9.2%
+ 5  | Mahesh Singh    | Morning | 8.0 L    | 5.0% | 8.7%
+ 6  | Dinesh Verma    | Morning | 9.5 L    | 4.3% | 8.4%
+ 7  | Ganesh Sharma   | Evening | 16.0 L   | 7.0% | 9.3%
+ 8  | Vijay Yadav     | Morning | 11.0 L   | 5.5% | 8.8%
+ 9  | Ajay Reddy      | Evening | 10.0 L   | 4.4% | 8.5%
+10  | Sanjay Nair     | Morning | 13.5 L   | 6.2% | 8.9%
+
+═══════════════════════════════════════════════════════════════════════════
+NOTES
+═══════════════════════════════════════════════════════════════════════════
+
+• Notice Rajesh Kumar and Suresh Patel have both Morning & Evening entries
+  (good for testing smart placeholders!)
+
+• Mix of Cow, Buffalo, and Both milk types for variety
+
+• Realistic FAT ranges: 4.2-7.0% (Cow: 3.5-5.5%, Buffalo: 6-8%)
+
+• Realistic SNF ranges: 8.3-9.3% (should be 7.5-9.5%)
+
+• Total milk: ~117.5 Liters across all collections
+
+═══════════════════════════════════════════════════════════════════════════
+TO REMOVE DEMO
+═══════════════════════════════════════════════════════════════════════════
+
+Simply run:  rm -rf demo/
+
+The app will work perfectly without any errors!
+═══════════════════════════════════════════════════════════════════════════

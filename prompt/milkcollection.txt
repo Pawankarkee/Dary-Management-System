@@ -1,0 +1,161 @@
+Use this prompt to instruct designers, front-end engineers, or an LLM to refactor and polish the Milk Collection screens. Paste it as-is into your task tracker, design brief, or prompt box.
+
+Goal (one sentence)
+
+Refactor the Milk Collection mobile UI so it is compact, consistent, responsive, and intuitive: single consolidated nav, swipe-to-switch sections (like Facebook feed), compact searchable farmer selector (25% overlay), correct rate behavior, and polished list/entry components.
+
+Objective details (what must change)
+
+Bottom nav
+
+Replace current cluttered nav with a compact bottom tab bar (icons + 1–2 letter labels).
+
+Tabs: Home, Farmers, Milk, Collections, Other (expandable in overflow).
+
+Each tab shows a single active label — no duplicate items.
+
+Visual: 56px height on phones; centered icons; subtle top shadow; active state uses filled icon + label.
+
+Swipe navigation (page-level)
+
+Implement horizontal swipe between primary sections (Newsfeed-style): left/right swipe should switch sections (e.g., Newsfeed ⇄ Messenger ⇄ Notifications analogy).
+
+Swiping must be fluid, with a small page preview/edge peek and a 200–300ms ease animation.
+
+Respect platform gestures (don’t conflict with system back). If conflict, require 30px horizontal drag threshold.
+
+Farmer search / selector (compact)
+
+Clicking the search field opens a modal overlay that occupies 25% of the screen height (not full screen).
+
+Overlay content: a small header (Search), a real-time search box, and a scrollable list of matching farmers (e.g. F001 – F005) with avatars/IDs.
+
+Show up to 5 results in that 25% region; further results via scrolling.
+
+Visual behavior: looks and behaves like a small contacts dropdown, not a full-screen contact list.
+
+Selecting a farmer closes the overlay and fills the search field.
+
+Rate field behavior (fix)
+
+Rate must be a numeric input like Quantity: no arbitrary autofill.
+
+Remove any logic that randomizes/auto-populates 20, 45, etc.
+
+If auto-rate is required by business rules, make it an explicit toggle: [ ] Auto-rate (from price list) — when checked, rate is fetched from the selected farmer's price; otherwise the user types the rate.
+
+Validation: rate ≥ 0, 2 decimal places allowed; show inline error if invalid.
+
+Consolidate top bar items
+
+Nap bar should show one consistent row with dynamic content depending on screen:
+
+If on Milk Collection screen: show Milk Collection (title) — Today's date — Calendar icon.
+
+Remove Dark mode and Sync from top nav; both belong in Settings.
+
+Keep dropdown only if it’s contextual (e.g., collection type); otherwise remove.
+
+Compact chips & controls
+
+(All) (Morning) (Evening) chips: reduce padding & font-size so chips are compact — allow 3 chips to fit in a single row on narrow phones.
+
+Layout order: Top Nav → Search area → Chips (All/Morning/Evening) → Collection Grid/List.
+
+Collection input row (Collection, Quantity, Rs/Amount) must be smaller, aligned, and visually grouped with subtle borders and micro-typography so the row fits tight without losing clarity.
+
+Farmer list (compact rows)
+
+Show farmer rows smaller: 5–6 names visible in a single screen height (depending on device).
+
+Each row: small avatar (32px), name, ID, quick-select affordance. Use denser vertical spacing (e.g., 8px) but keep tappable area ≥44px.
+
+Support infinite scroll or virtualized list for performance.
+
+Remove duplicates
+
+Detect and remove duplicated components (e.g., two search bars, two headers). Consolidate logic and styles so each UI function has a single implementation across screens.
+
+UX / Interaction details
+
+Tappable targets must be at least 44×44 px.
+
+Use subtle motion: 200–300ms for micro-interactions, 300–400ms for page transitions.
+
+Provide visual affordances for swipe: a small page indicator or a faint edge hint.
+
+All inputs show inline validation messages under the field.
+
+Keyboard behavior: when search input opens, ensure overlay stays anchored at top of keyboard (25% height means it floats above keyboard if keyboard present).
+
+Accessibility: semantic roles, proper contrast ratios (AA), screen reader labels for dynamic elements (e.g., “Open farmer selector, 3 results”).
+
+Responsive behavior & breakpoints
+
+Small phones (≤360px wide): chips compacted to icons + small text; search overlay remains 25% height.
+
+Medium phones (361–420px): default compact view.
+
+Large phones / tablets: allow the farmer selector to expand to 40% height or turn into a side-sheet on tablet landscape.
+
+All controls must be responsive and reflow vertically on narrow widths.
+
+Visual style guidance
+
+Spacing: use a 4px base grid.
+
+Typography: Title 18–20px, body 13–14px, micro 11–12px.
+
+Colors: keep neutral background, strong accent for primary buttons; minimal shadows; subtle dividers.
+
+Use small rounded corners (6–10px) for chips and inputs.
+
+Developer/Implementation notes
+
+Components: BottomNav, SwipePager, FarmerSelectorOverlay(visibleHeight=0.25), CompactChips, CollectionEntryRow.
+
+Use virtualization for lists (e.g., FlatList/RecyclerListView) to support large farmer lists.
+
+Data binding: when selecting a farmer, prefill known metadata (default rate only if Auto-rate on).
+
+Tests: unit tests for rate validation, integration test for the 25% overlay behavior, E2E test for swipe navigation and farmer selection.
+
+Acceptance criteria (must pass)
+
+Bottom nav is one compact bar; no duplicate nav items anywhere.
+
+Horizontal swipe transitions pages reliably without conflicting with back gesture.
+
+Clicking farmer search opens a 25% height modal overlay showing up to 5 scrollable results; selecting fills the search field.
+
+Rate never autocompletes randomly; it behaves like quantity unless auto-rate toggle is explicitly enabled.
+
+Top bar shows only: page title, date, calendar when on Milk Collection; Dark mode & Sync removed to Settings.
+
+Chips and collection input rows are compact; visually fit as described and are responsive across breakpoints.
+
+Farmer list rows are denser: 5–6 visible names on typical phone screen; scrolling works; performance OK.
+
+No duplicate components; single source of truth for each widget.
+
+Edge cases & notes
+
+If device uses system swipe gestures (iOS), prefer an explicit page indicator affordance and increase swipe threshold.
+
+If keyboard covers overlay, adjust overlay to remain visible (anchor to keyboard top).
+
+If business requires defaulting a rate, implement server-driven “default rate” and show it only when Auto-rate is ON.
+
+Deliverables
+
+Updated Figma screens (mobile breakpoints + one tablet landscape) — show before/after.
+
+React Native / React single-file example components for FarmerSelectorOverlay and CollectionEntryRow.
+
+QA checklist & automated test cases (rate validation, overlay height, swipe behavior).
+
+Short design tokens: spacing, font sizes, colors, radii.
+
+Example small prompt to give a developer or LLM (copy/paste)
+
+"Refactor the Milk Collection mobile screen: create a compact bottom nav, enable page-level left/right swipe between primary sections, and implement a farmer search overlay that occupies 25% of the screen with up to 5 scrollable results. Remove Dark mode and Sync from the top nav (move them to Settings). Make the rate field behave like quantity (no random autofill) with an optional explicit Auto-rate toggle. Compact the chips and collection input rows so more items fit on screen; list rows should be denser so 5–6 farmer names are visible on typical phones. Provide responsive behavior for small and large screens and fix duplicate UI elements."

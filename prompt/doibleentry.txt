@@ -1,0 +1,108 @@
+🧠 Context Engineering Prompt — Duplicate Entry Detection & Confirmation Popup (Milk Collection Form)
+You are an expert Flutter developer working on an offline-first Dairy Management System.  
+Your task is to enhance the "Add Milk Collection" feature to prevent accidental duplicate entries and provide a smooth confirmation flow for the shopkeeper.
+
+---
+
+### CONTEXT:
+- The shopkeeper enters milk collection data daily for many farmers.
+- Each farmer has a **unique Farmer ID** to avoid confusion between farmers with the same name.
+- Sometimes, by mistake, the shopkeeper might enter milk twice for the same farmer on the same date.
+- To prevent duplicate entries, the system should automatically detect such cases and ask for confirmation before saving.
+
+---
+
+### OBJECTIVE:
+Create a **duplicate entry detection and confirmation mechanism** for the “Add Collection” form.
+
+---
+
+### FUNCTIONAL BEHAVIOR:
+
+1. **Form Inputs:**
+   - Farmer ID (required)
+   - Farmer Name (auto-filled or selected)
+   - Quantity (required)
+   - FAT (optional)
+   - SNF (optional)
+   - Rate (required)
+   - Total Amount (auto-calculated)
+
+2. **Duplicate Check Logic:**
+   - When the user fills out the form and presses **Enter**, **Done**, or **Save**, the system should:
+     1. Check in the local database (Hive) if a milk entry for the **same Farmer ID and Date** already exists.
+     2. If no duplicate is found → Save data normally.
+     3. If a duplicate is detected → Trigger a **confirmation popup**.
+
+3. **Confirmation Popup Behavior:**
+   - Popup Title: “Duplicate Entry Detected”
+   - Popup Message (example):
+     ```
+     Milk entry for this farmer (Name: {farmerName}, ID: {farmerId}) already exists today.
+     Do you want to add another entry for this farmer?
+     ```
+   - Popup Buttons:
+     - **OK / Confirm / Yes** → Save new entry under the same Farmer ID (allow duplicate intentionally).
+     - **Cancel / No** → Abort save and return to the form.
+
+4. **Keyboard Behavior:**
+   - If user presses **Enter key twice** quickly (double Enter), show the same confirmation popup.
+   - If user presses **Enter or OK** on the popup, the data will be saved under the same ID.
+   - If user presses **Esc** or **Cancel**, it will not save.
+
+5. **Data Handling:**
+   - All data is saved locally (offline-first) using Hive.
+   - The duplicate confirmation logic should work offline.
+   - Keep both entries in history if the user confirms (use timestamp to differentiate).
+
+---
+
+### UI/UX REQUIREMENTS:
+- Use a Material Design **AlertDialog** or CupertinoDialog (depending on platform).
+- Show farmer details clearly in the popup for confirmation.
+- Ensure the popup doesn’t block other operations (non-modal overlay).
+- Provide short vibration or sound feedback on duplicate detection (optional).
+- Maintain focus and smooth UX (press Enter = navigate next field, double Enter = trigger confirmation).
+
+---
+
+### VALIDATION RULES:
+- Farmer ID is mandatory.
+- Quantity and Rate must be > 0.
+- Total amount auto-calculates.
+- If duplicate detected → ask user before saving.
+- If user confirms → Save data normally with new timestamp.
+
+---
+
+### EXPECTED OUTPUT:
+Provide:
+1. A logical flow of how duplicate detection and confirmation popup works.
+2. How keyboard interactions (Enter/Double Enter/Done) trigger the popup.
+3. Clean integration approach with existing form validation.
+4. Ensure offline support (Hive-based check).
+5. Example text for the confirmation popup message.
+6. Explanation of user flow for both desktop and mobile platforms.
+
+---
+
+### CONSTRAINTS:
+- Must work completely offline (Hive local DB).
+- No duplicate entries without user confirmation.
+- Farmer ID used as primary identifier.
+- Responsive for both mobile and desktop.
+- All logic should run locally (no API dependency).
+
+
+✅ In short:
+This prompt instructs the system to:
+
+Detect duplicate farmer entries automatically.
+
+Show a clear, user-friendly confirmation popup.
+
+Support both Enter key and touch-based confirmation.
+
+Allow intentional duplicates only after confirmation.
+
+Keep everything offline and fast.

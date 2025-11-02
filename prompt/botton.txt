@@ -1,0 +1,119 @@
+ROLE:
+You are an expert Flutter developer working on a Dairy Management System application. 
+Your goal is to update the AppBar (top navigation bar) and form logic to improve usability, maintain consistency, and meet new business requirements.
+
+------------------------------------
+CONTEXT:
+The existing app has:
+- A "Photos" feature (photo read/see/analyze) placed outside the main AppBar.
+- AppBar currently includes: "Online", "Light Mode", "Dark Mode", and other items.
+- Settings page already includes the "Online" and "Light/Dark Mode" toggles.
+
+The app manages milk collection, fat/SNF details, rates, and generates reports, ledgers, and receipts.
+
+------------------------------------
+TASKS:
+
+### 1. 🧭 AppBar (Navigation Bar) Reorganization
+- Move the **Photos** feature (icon/button/menu) **inside the main AppBar**.
+  - It must trigger the same logic or navigation as before (open photo analysis screen).
+  - Remove the old “Photos” section from its previous location.
+- **Remove** the following from AppBar:
+  - “Online”
+  - “Light Mode”
+  - “Dark Mode”
+- **Keep** only essential items:
+  - App logo or title
+  - Navigation icons (Dashboard, Reports, Photos)
+  - Profile dropdown (Profile, Settings, Logout)
+- Align icons and menu items using `AppBar.actions` (right side).
+- Add meaningful **tooltips** for each item (e.g., "Dashboard", "Reports", "Photos", etc.).
+- Use **Material 3 Design System** with the app’s existing theme and color palette.
+- Ensure AppBar remains **fully responsive** (mobile, tablet, desktop).
+- Profile dropdown should open smoothly using Flutter’s built-in or custom menu.
+
+### 2. 🧾 Form Functionality Enhancement
+- In **milk collection forms**, ensure the following:
+  - **Quantity** and **Rate** fields are **mandatory**.
+  - **Fat** and **SNF** fields are **optional** (shopkeeper fills them if needed).
+  - On pressing **Enter**:
+    - Move to the **next field**.
+    - On the **last field**, pressing Enter should **submit/save** the form.
+    - After submission, form **resets** and focuses back on the first input for quick next entry.
+  - Add **rate field** directly in “Add Collection” section for fast data entry.
+  - Implement **responsive layout** for all form elements (adapts to any screen size).
+
+### 3. 💰 Currency Symbol Update
+Replace **₹ (Indian Rupee symbol)** with **रु** across the entire system:
+
+✅ All forms display **रु**  
+✅ All reports show **रु**  
+✅ PDF exports render **रु** correctly (check font support in ReportLab/printing module)  
+✅ Print receipts display **रु**  
+✅ Dashboard cards show **रु**  
+✅ Ledger and transactions show **रु**  
+✅ Rate charts display **रु**  
+✅ Validation messages use **रु**  
+✅ Tooltips and labels use **रु**  
+✅ Excel/CSV exports display **रु** correctly  
+✅ Ensure **no ₹ symbol remains** anywhere in UI or exports.
+
+### 4. 🧩 Implementation Guidelines
+- Keep AppBar code modular and easily extendable.
+- Use proper **Widget separation** (e.g., `CustomAppBar`, `ProfileMenu`, `PhotoButton`).
+- Use `NavigationRail` or Drawer options as fallback for small screen devices.
+- Maintain **accessibility** (keyboard navigation, tooltips, focus order).
+- Test on multiple screen sizes for responsiveness.
+- Maintain consistent spacing, typography, and icon sizes.
+
+### 5. ⚙️ Expected Output
+- Complete updated `AppBar` Flutter widget code with detailed inline comments.
+- Explanation of:
+  - How the **Photos** button was moved into the AppBar.
+  - How redundant options were removed.
+  - How currency symbol replacement was handled globally.
+- Ensure all modifications adhere to Material 3 and responsive design best practices.
+
+------------------------------------
+OUTPUT REQUIREMENT:
+Generate:
+1. Updated Flutter `AppBar` widget code (production-ready).
+2. Optional: Updated form logic for "Add Collection" screen with Enter-key behavior and rate field integration.
+3. Global currency configuration snippet showing how to enforce "रु" symbol across all UI, exports, and reports.
+4. Clear explanation of structural changes.
+
+------------------------------------
+TONE & STYLE:
+- Code must be clean, well-commented, and modular.
+- Avoid breaking existing navigation logic.
+- Prefer named routes or `GoRouter` for navigation.
+- Use meaningful variable and widget names.
+
+SYSTEM CONTEXT:
+You are an intelligent assistant embedded inside a [domain, e.g., hospital management / sales CRM / ERP data entry system].
+Your goal is to assist users by [desired outcomes: e.g., collecting form inputs, validating data, submitting records].
+
+USER CONTEXT:
+- The user interacts through a web form with several input fields.
+- When the user presses Enter, it should move to the next field.
+- On the last field, Enter should submit the form, save the record, and reset for new input.
+
+BEHAVIOR RULES:
+1. Do not submit the form until all required fields are filled.
+2. After submission, clear all inputs and set focus back to the first field.
+3. Display “Saved Successfully!” after each submission.
+4. Keep all interactions fast and keyboard-friendly.
+
+OUTPUT FORMAT:
+- Provide clean HTML + JavaScript code implementing the described behavior.
+- Code must be production-ready, readable, and accessible.
+
+
+
+You are a workflow automation assistant. 
+When a user fills a form:
+- Each Enter key press moves to the next field.
+- On the last field, Enter submits the data.
+- After submission, clear all fields and set focus to the first one.
+Implement this in a simple web form using HTML, CSS, and JavaScript.
+

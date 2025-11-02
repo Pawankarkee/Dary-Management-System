@@ -1,0 +1,1109 @@
+# Dairify - Milk Collection Smart Auto-Fill Feature
+## Context Engineering Prompt for Development
+
+---
+
+## 🎯 Feature Requirement
+
+**Feature:** Smart Auto-Fill for Milk Collection Entry Form  
+**Goal:** Reduce milk collection entry time from 30 seconds to under 10 seconds per farmer by automatically filling previous values
+
+---
+
+## ⌨️ Auto-Fill Trigger Behavior
+
+### **Keyboard Triggers**
+- **Enter Key** or **Tab Key**: Automatically fill field with previous value if field is empty, then move to next field
+- **Manual Entry**: User can type to override any auto-filled value
+- **Field Selection**: Auto-filled values are highlighted for easy replacement
+
+---
+
+## 📋 Field-by-Field Auto-Fill Specification
+
+### **1. Date Field**
+```
+Behavior: Auto-detect from device date (always)
+Format: DD-MM-YYYY or based on device locale
+Source: Device system date
+Editable: Yes (for backdated entries)
+```
+
+### **2. Time Field**
+```
+Behavior: Auto-detect from device time (always)
+Format: HH:MM AM/PM or 24-hour based on device settings
+Source: Device system time
+Editable: Yes (for backdated entries)
+```
+
+### **3. Shift Field**
+```
+Behavior: Auto-select based on current time
+Logic:
+  - 05:00 AM to 11:59 AM → Morning
+  - 12:00 PM to 04:59 AM → Evening
+Source: Device time
+Editable: Yes (manual override allowed)
+```
+
+### **4. Quantity (Liters) Field**
+```
+Trigger: User presses Enter/Tab on empty field
+Action: 
+  - Fetch last quantity value for selected farmer
+  - Auto-fill the field
+  - Highlight text (select all)
+  - Move focus to next field
+Source: Last milk collection entry of same farmer_id
+Editable: Yes (user can type new value)
+Query: SELECT quantity FROM milk_collections 
+       WHERE farmer_id = ? ORDER BY created_at DESC LIMIT 1
+```
+
+### **5. FAT (%) Field**
+```
+Trigger: User presses Enter/Tab on empty field
+Action: 
+  - Fetch last FAT value for selected farmer
+  - Auto-fill the field
+  - Highlight text (select all)
+  - Trigger rate recalculation
+  - Move focus to next field
+Source: Last milk collection entry of same farmer_id
+Editable: Yes (user can type new value)
+Query: SELECT fat FROM milk_collections 
+       WHERE farmer_id = ? ORDER BY created_at DESC LIMIT 1
+```
+
+### **6. SNF (%) Field**
+```
+Trigger: User presses Enter/Tab on empty field
+Action: 
+  - Fetch last SNF value for selected farmer
+  - Auto-fill the field
+  - Highlight text (select all)
+  - Trigger rate recalculation
+  - Move focus to next field
+Source: Last milk collection entry of same farmer_id
+Editable: Yes (user can type new value)
+Query: SELECT snf FROM milk_collections 
+       WHERE farmer_id = ? ORDER BY created_at DESC LIMIT 1
+```
+
+### **7. Rate Field (Auto-Calculated)**
+```
+Behavior: Always auto-calculated (not from previous entry)
+Trigger: When FAT or SNF values are entered/changed
+Calculation: Rate = Base Rate + (FAT Bonus) + (SNF Bonus)
+Display: Show as calculated with info icon
+Editable: Only by Admin role (Collector role: read-only)
+Example: Base ₹30 + (FAT 6.2% × ₹2) + (SNF 8.4% × ₹1) = ₹32.80
+```
+
+### **8. Amount Field**
+```
+Trigger Option 1: User presses Enter/Tab on empty field
+Action:
+  - Auto-calculate: Quantity × Rate
+  - Fill the amount field
+  - Highlight value
+  - Move to Save button
+
+Trigger Option 2: Quantity or Rate changes
+Action:
+  - If amount field is empty OR was previously auto-calculated
+  - Recalculate: Quantity × Rate
+  - Update amount field
+
+Manual Entry Override:
+  - User can manually type amount
+  - System shows warning: "Manual amount differs from calculated"
+  - Display: Calculated: ₹X.XX | Entered: ₹Y.YY | Diff: ±₹Z.ZZ
+  - Allow save (admin override scenario)
+
+Calculation: Amount = Quantity × Rate
+Display: Show calculation hint (e.g., "18.5 L × ₹32.80")
+Editable: Yes (with warning if differs from calculated)
+```
+
+---
+
+## 🎨 Visual Design Requirements
+
+### **Auto-Fill Indicators**
+```
+Icons to use:
+🔄 - Auto-filled from previous entry
+🧮 - Auto-calculated 
+⚠️ - Manual override warning
+ℹ️ - Information/hint
+
+Color Coding:
+- Auto-filled fields: Light blue background (#E3F2FD)
+- Auto-calculated fields: Light green background (#E8F5E9)
+- Manual edit fields: White background
+- Warning fields: Light yellow background (#FFF9C4)
+```
+
+### **Last Entry Preview Card**
+```
+Display above form when farmer is selected:
+
+┌────────────────────────────────────────┐
+│ 📊 Last Entry (27-Oct-2025, Evening)   │
+│ Quantity: 18.5 L                       │
+│ FAT: 6.2% | SNF: 8.4%                 │
+│ Rate: ₹32.80 | Amount: ₹606.80        │
+└────────────────────────────────────────┘
+```
+
+### **Field Display Format**
+```
+[Field Label]
+┌─────────────────────────────┐
+│ [Value] 🔄 Auto-filled      │  ← Show indicator
+└─────────────────────────────┘
+    ↑ Press Enter to accept or type new value
+```
+
+---
+
+## 🔄 Complete Entry Flow
+
+### **User Journey**
+```
+Step 1: Select/Search Farmer
+   ↓
+Step 2: System shows "Last Entry Preview Card"
+   ↓
+Step 3: Date & Time auto-filled from device
+   ↓
+Step 4: Shift auto-selected based on time
+   ↓
+Step 5: User tabs to Quantity field
+   ↓ (Press Enter/Tab without typing)
+Step 6: Quantity auto-fills from last entry (18.5 L)
+   ↓ (Press Enter to accept or type new value)
+Step 7: User tabs to FAT field
+   ↓ (Press Enter/Tab without typing)
+Step 8: FAT auto-fills from last entry (6.2%)
+   ↓ (Press Enter to accept or type new value)
+Step 9: User tabs to SNF field
+   ↓ (Press Enter/Tab without typing)
+Step 10: SNF auto-fills from last entry (8.4%)
+   ↓ (Rate auto-calculates: ₹32.80)
+Step 11: User tabs to Amount field
+   ↓ (Press Enter/Tab without typing)
+Step 12: Amount auto-calculates (18.5 × 32.80 = ₹606.80)
+   ↓ (Press Enter to accept or type new value)
+Step 13: Press Enter or click Save
+   ↓
+Step 14: Entry saved to Hive local database
+```
+
+### **Keyboard Navigation**
+```
+Tab Order:
+Farmer ID → Date → Time → Shift → Quantity → FAT → SNF → Rate → Amount → Save Button
+
+Shortcuts:
+- Ctrl/Cmd + S: Save entry
+- Ctrl/Cmd + N: New entry
+- Ctrl/Cmd + R: Reset form
+- Esc: Cancel
+```
+
+---
+
+## 💻 Technical Implementation Guidelines
+
+### **Data Fetching Logic**
+```
+On Farmer Selection:
+1. Load last milk collection entry for that farmer
+2. Store in memory for quick access
+3. Display in preview card
+4. Use for auto-fill when fields lose focus
+
+Query Structure:
+{
+  SELECT quantity, fat, snf, rate, amount, date, shift
+  FROM milk_collections
+  WHERE farmer_id = '{selected_farmer_id}'
+  ORDER BY created_at DESC
+  LIMIT 1
+}
+```
+
+### **Field Event Handling**
+```
+TextField Properties:
+- onSubmitted: Triggered on Enter key
+- onEditingComplete: Triggered on Tab key
+- onTap: Select all if auto-filled
+- onChanged: Clear auto-fill flag if user types
+
+Focus Management:
+- FocusNode for each field
+- Auto-advance focus on Enter/Tab
+- Highlight text when auto-filled
+- Clear selection when user starts typing
+```
+
+### **Calculation Triggers**
+```
+Rate Calculation:
+- Triggered when: FAT changes OR SNF changes
+- Method: Fetch from rate chart based on FAT/SNF values
+- Update: Rate field (read-only display)
+
+Amount Calculation:
+- Triggered when: Quantity changes OR Rate changes
+- Method: Quantity × Rate
+- Update: Amount field (if empty or previously auto-calculated)
+- Flag: Track if amount is auto-calculated vs manual
+```
+
+### **State Management**
+```
+Track for each field:
+- isAutoFilled: Boolean (true if value came from last entry)
+- isCalculated: Boolean (true if value is calculated)
+- isManuallyEdited: Boolean (true if user typed a value)
+- lastEntryData: Object (cached previous entry data)
+```
+
+---
+
+## 📱 Responsive Design Requirements
+
+### **Mobile (320px - 767px)**
+```
+- Single column layout
+- Full-width fields
+- Large touch targets (min 44px height)
+- Auto-zoom disabled on input focus
+- Bottom sheet for farmer selection
+- Sticky Save button at bottom
+```
+
+### **Tablet (768px - 1023px)**
+```
+- Two-column layout for Date/Time, FAT/SNF
+- Side panel for last entry preview
+- Medium-sized fields
+- Floating action button for Save
+```
+
+### **Desktop (1024px+)**
+```
+- Three-column layout where appropriate
+- Inline last entry preview
+- Keyboard shortcuts enabled
+- Hover effects on fields
+- Tooltips for auto-fill indicators
+```
+
+### **Responsive TextField**
+```
+Base Properties:
+- Font size: 16px (mobile), 14px (desktop)
+- Padding: 12px (mobile), 10px (desktop)
+- Border radius: 8px
+- Min height: 48px (mobile), 40px (desktop)
+- Auto-resize for long content
+```
+
+---
+
+## ✅ Validation Rules
+
+### **Field Validations**
+```
+Quantity:
+- Required
+- Must be > 0
+- Max: 100 liters (per entry)
+- Decimal allowed (up to 2 places)
+
+FAT:
+- Required
+- Range: 3.0% - 10.0%
+- Warning if outside typical range
+- Allow save anyway
+
+SNF:
+- Required
+- Range: 7.5% - 10.0%
+- Warning if outside typical range
+- Allow save anyway
+
+Amount:
+- Required
+- Must be > 0
+- Warning if differs from calculated by >10%
+- Require confirmation if manual override
+```
+
+---
+
+## 🔐 Role-Based Behavior
+
+### **Admin Role**
+```
+- Can edit all fields including Rate
+- Can manually override Amount
+- Can backdated entries (edit Date/Time)
+- Can view calculation details
+- Can modify rate chart
+```
+
+### **Collector Role**
+```
+- Cannot edit Rate (read-only, calculated)
+- Amount is auto-calculated (can request admin override)
+- Can enter current date only (no backdated entries)
+- Limited to data entry operations
+```
+
+---
+
+## 📊 Success Criteria
+
+```
+Performance Targets:
+✅ Form auto-fills in < 500ms after farmer selection
+✅ Rate calculation completes in < 100ms
+✅ Entry saves to Hive in < 200ms
+✅ Complete entry time: < 10 seconds (with auto-fill)
+✅ Works offline without any delay
+✅ Responsive on all screen sizes
+
+User Experience:
+✅ No manual typing needed for repeated values
+✅ Visual feedback for all auto-filled fields
+✅ Easy override with single keystroke
+✅ Clear indication of calculated vs manual values
+✅ Intuitive keyboard navigation
+```
+
+---
+
+## 🛠️ Technology Stack
+
+```
+Frontend: Flutter (Dart)
+State Management: Provider or Riverpod
+Local Database: Hive
+Form Handling: Flutter Form widgets with Focus management
+Date/Time: DateTime (Dart) + intl package
+Number Formatting: intl package (NumberFormat)
+Keyboard Handling: FocusNode + RawKeyboardListener
+Responsive: MediaQuery + LayoutBuilder
+```
+
+---
+
+## 📝 Implementation Notes
+
+```
+1. Cache last entry data on farmer selection for quick access
+2. Use FocusNode listeners for Enter/Tab detection
+3. Implement TextEditingController for each field
+4. Use ValueNotifier for reactive field updates
+5. Debounce calculation triggers (300ms) to avoid excessive recalculations
+6. Store auto-fill flags in controller state
+7. Implement undo/redo for manual overrides
+8. Log all auto-fill actions for debugging
+9. Add haptic feedback on auto-fill (mobile)
+10. Show loading indicators during data fetch
+```
+
+---
+
+**This prompt provides complete specifications for implementing the smart auto-fill feature in the Dairify milk collection form. All fields will automatically populate with previous values when Enter/Tab is pressed on empty fields, with date/time auto-detected from device, and amount auto-calculated from quantity × rate.**
+
+
+# Dairify - Duplicate Entry Prevention System
+## Context Engineering Prompt for Development
+
+---
+
+## 🎯 Feature Requirement
+
+**Feature:** Duplicate Entry Detection & Confirmation System  
+**Goal:** Prevent accidental duplicate milk collection entries for the same farmer on the same date and shift  
+**Method:** Show popup confirmation when duplicate entry is detected
+
+---
+
+## 🔍 Duplicate Entry Detection Logic
+
+### **What Constitutes a Duplicate Entry?**
+
+```
+A duplicate entry is detected when ALL of the following match:
+
+1. Same Farmer ID
+2. Same Date
+3. Same Shift (Morning or Evening)
+
+Example Duplicate Scenario:
+┌─────────────────────────────────────────────┐
+│ Existing Entry in Database:                 │
+│ Farmer: F001 (Ramesh Patel)                │
+│ Date: 28-10-2025                            │
+│ Shift: Morning                              │
+│ Quantity: 18.5 L                            │
+├─────────────────────────────────────────────┤
+│ New Entry Attempt:                          │
+│ Farmer: F001 (Ramesh Patel)                │
+│ Date: 28-10-2025                            │
+│ Shift: Morning                              │
+│ Quantity: 20.0 L                            │
+└─────────────────────────────────────────────┘
+        ↓
+   🚨 DUPLICATE DETECTED!
+```
+
+---
+
+## ⚠️ When to Check for Duplicates
+
+### **Trigger Points**
+
+```
+Check #1: On Farmer Selection + Date/Shift Change
+├─ User selects farmer from dropdown
+├─ Date and shift fields are auto-filled/changed
+├─ System immediately checks for existing entry
+└─ Show warning badge if duplicate exists
+
+Check #2: Before Save Button Click
+├─ User clicks "Save Entry" button
+├─ System performs final duplicate check
+├─ If duplicate found: Show confirmation popup
+└─ If no duplicate: Save directly
+
+Check #3: On Shift Toggle (if date is same)
+├─ User changes shift from Morning to Evening (or vice versa)
+├─ System checks for existing entry with new shift
+└─ Show warning badge if duplicate exists
+```
+
+---
+
+## 🎨 Duplicate Warning UI Design
+
+### **1. Real-Time Warning Badge (Soft Warning)**
+
+```
+Display Location: Below Shift selector, above Quantity field
+
+Visual Design:
+┌────────────────────────────────────────────────┐
+│ Shift: ● Morning  ○ Evening                    │
+├────────────────────────────────────────────────┤
+│ ⚠️ Entry Already Exists                        │
+│ ┌──────────────────────────────────────────┐  │
+│ │ 📊 Existing Entry (Today, Morning)       │  │
+│ │ Time: 08:45 AM                           │  │
+│ │ Quantity: 18.5 L                         │  │
+│ │ FAT: 6.2% | SNF: 8.4%                   │  │
+│ │ Amount: ₹606.80                          │  │
+│ │                                          │  │
+│ │ [📝 Edit Existing] [➕ Add New Anyway]  │  │
+│ └──────────────────────────────────────────┘  │
+└────────────────────────────────────────────────┘
+
+Color Scheme:
+- Border: Orange (#FF9800)
+- Background: Light orange (#FFF3E0)
+- Icon: Warning yellow
+- Text: Dark orange (#E65100)
+```
+
+### **2. Confirmation Popup (Before Save)**
+
+```
+Display: Modal dialog / Bottom sheet (mobile) / Alert dialog (desktop)
+
+Popup Design:
+┌────────────────────────────────────────────────┐
+│              ⚠️ Duplicate Entry                │
+│                                                │
+│  An entry already exists for:                 │
+│                                                │
+│  👤 Farmer: Ramesh Patel (F001)               │
+│  📅 Date: 28-Oct-2025                         │
+│  🌅 Shift: Morning                            │
+│                                                │
+│  ┌──────────────────────────────────────────┐ │
+│  │ Existing Entry (08:45 AM)                │ │
+│  │ Quantity: 18.5 L                         │ │
+│  │ FAT: 6.2% | SNF: 8.4%                   │ │
+│  │ Rate: ₹32.80 | Amount: ₹606.80          │ │
+│  └──────────────────────────────────────────┘ │
+│                                                │
+│  ┌──────────────────────────────────────────┐ │
+│  │ New Entry (Now)                          │ │
+│  │ Quantity: 20.0 L                         │ │
+│  │ FAT: 6.5% | SNF: 8.6%                   │ │
+│  │ Rate: ₹33.50 | Amount: ₹670.00          │ │
+│  └──────────────────────────────────────────┘ │
+│                                                │
+│  What would you like to do?                   │
+│                                                │
+│  [❌ Cancel]  [📝 Replace Existing]           │
+│               [➕ Add as New Entry]           │
+└────────────────────────────────────────────────┘
+
+Responsive Sizes:
+- Mobile: Full-screen bottom sheet with slide-up animation
+- Tablet: 80% width centered modal
+- Desktop: 500px width centered modal
+```
+
+---
+
+## 🔄 User Action Flow & Options
+
+### **Option 1: Cancel**
+
+```
+User Action: Clicks "Cancel" button
+System Response:
+├─ Close popup
+├─ Return to form (no changes)
+├─ Keep form data intact
+├─ User can modify and try again
+└─ No database changes
+```
+
+### **Option 2: Replace Existing Entry**
+
+```
+User Action: Clicks "Replace Existing" button
+System Response:
+├─ Show confirmation sub-dialog:
+│   ┌─────────────────────────────────────┐
+│   │ ⚠️ Confirm Replace                  │
+│   │                                     │
+│   │ This will delete the old entry     │
+│   │ and save the new one.              │
+│   │                                     │
+│   │ Old entry will be moved to         │
+│   │ "Deleted Entries" log.             │
+│   │                                     │
+│   │ [Go Back] [✅ Yes, Replace]        │
+│   └─────────────────────────────────────┘
+├─ If confirmed:
+│   ├─ Soft delete existing entry (mark as deleted)
+│   ├─ Save deletion log with reason: "Replaced"
+│   ├─ Save new entry
+│   ├─ Update farmer ledger (adjust balances)
+│   ├─ Show success message: "Entry replaced successfully"
+│   └─ Clear form and prepare for next entry
+└─ If not confirmed: Return to main popup
+```
+
+### **Option 3: Add as New Entry (Force Duplicate)**
+
+```
+User Action: Clicks "Add as New Entry" button
+System Response:
+├─ Show confirmation sub-dialog:
+│   ┌─────────────────────────────────────┐
+│   │ ⚠️ Confirm Duplicate Entry          │
+│   │                                     │
+│   │ This will create a SECOND entry    │
+│   │ for the same farmer, date & shift. │
+│   │                                     │
+│   │ Reason: ________________           │
+│   │ (Optional: "Second collection")    │
+│   │                                     │
+│   │ [Go Back] [✅ Yes, Add]            │
+│   └─────────────────────────────────────┘
+├─ If confirmed:
+│   ├─ Flag entry as "intentional_duplicate"
+│   ├─ Save duplicate reason in entry
+│   ├─ Save new entry (both entries exist)
+│   ├─ Update farmer ledger (add both amounts)
+│   ├─ Show success message: "Duplicate entry saved"
+│   └─ Clear form and prepare for next entry
+└─ If not confirmed: Return to main popup
+
+Use Cases for Legitimate Duplicates:
+- Farmer brings milk twice in same shift
+- Correction entry (different quality detected later)
+- Split delivery (morning collection in two batches)
+- Multiple cattle owners using same ID
+```
+
+### **Option 4: Edit Existing Entry**
+
+```
+User Action: Clicks "Edit Existing" button (from warning badge)
+System Response:
+├─ Load existing entry data into form
+├─ Change mode to "Edit" (not "New")
+├─ Pre-fill all fields with existing values
+├─ Change Save button to "Update Entry"
+├─ Allow modifications
+├─ On save:
+│   ├─ Update existing entry (no duplicate created)
+│   ├─ Log modification with timestamp
+│   ├─ Update farmer ledger (adjust if amount changed)
+│   └─ Show success: "Entry updated successfully"
+└─ Close form
+```
+
+---
+
+## 💾 Database Schema Extensions
+
+### **Add Fields to milk_collections Table**
+
+```sql
+milk_collections {
+  id: String (Primary Key)
+  farmer_id: String (Foreign Key)
+  date: Date
+  shift: Enum [Morning, Evening]
+  quantity: Decimal
+  fat: Decimal
+  snf: Decimal
+  rate: Decimal
+  amount: Decimal
+  
+  -- NEW FIELDS FOR DUPLICATE HANDLING --
+  is_duplicate: Boolean (default: false)
+  duplicate_reason: String (nullable)
+  replaced_entry_id: String (nullable, references id)
+  is_deleted: Boolean (default: false)
+  deleted_at: DateTime (nullable)
+  deleted_by: String (nullable, user id)
+  deletion_reason: String (nullable)
+  modified_at: DateTime (nullable)
+  modified_by: String (nullable, user id)
+  
+  created_at: DateTime
+  updated_at: DateTime
+  is_synced: Boolean
+}
+```
+
+### **New Table: entry_audit_log**
+
+```sql
+entry_audit_log {
+  id: String (Primary Key)
+  entry_id: String (Foreign Key to milk_collections)
+  action: Enum [Created, Updated, Deleted, Replaced, Duplicate_Added]
+  old_values: JSON (snapshot of previous data)
+  new_values: JSON (snapshot of new data)
+  performed_by: String (user id)
+  reason: String (nullable)
+  timestamp: DateTime
+  is_synced: Boolean
+}
+```
+
+---
+
+## 🔍 Duplicate Detection Query
+
+### **Check for Existing Entry**
+
+```sql
+-- Hive/Local Query (Pseudo-code)
+SELECT * FROM milk_collections 
+WHERE farmer_id = '{selected_farmer_id}' 
+  AND date = '{selected_date}' 
+  AND shift = '{selected_shift}'
+  AND is_deleted = false
+ORDER BY created_at DESC
+LIMIT 1
+
+-- Laravel/PostgreSQL Query
+DB::table('milk_collections')
+  ->where('farmer_id', $farmerId)
+  ->where('date', $date)
+  ->where('shift', $shift)
+  ->where('is_deleted', false)
+  ->orderBy('created_at', 'desc')
+  ->first();
+```
+
+### **Check Timing (Performance)**
+
+```
+When to Execute:
+✅ On farmer selection change (after 500ms debounce)
+✅ On date change (after 300ms debounce)
+✅ On shift change (immediate)
+✅ On save button click (immediate, blocking)
+
+Performance Requirements:
+- Query execution: < 50ms
+- Popup display: < 100ms after detection
+- No UI freeze/lag during check
+```
+
+---
+
+## 🎯 User Experience Flow
+
+### **Scenario 1: No Duplicate (Normal Flow)**
+
+```
+1. User selects farmer
+2. System checks for duplicate → Not found
+3. ✅ Green checkmark shown: "No existing entry"
+4. User enters data
+5. User clicks Save
+6. Entry saved immediately
+7. Success message shown
+```
+
+### **Scenario 2: Duplicate Found (Warning Badge)**
+
+```
+1. User selects farmer
+2. Date auto-fills (today)
+3. Shift auto-selects (Morning)
+4. System checks for duplicate → Found!
+5. ⚠️ Warning badge appears below shift
+6. Badge shows existing entry details
+7. User has two options in badge:
+   a. "Edit Existing" → Loads existing entry
+   b. "Add New Anyway" → Continues with new entry
+8. If user continues with new entry and clicks Save
+   → Confirmation popup appears (detailed above)
+```
+
+### **Scenario 3: Duplicate Found (Save Attempt)**
+
+```
+1. User completes form (duplicate exists but ignored warning)
+2. User clicks "Save Entry" button
+3. System performs final duplicate check → Found!
+4. 🚨 Confirmation popup appears (blocks save)
+5. User must choose action:
+   - Cancel → Return to form
+   - Replace Existing → Confirm → Replace
+   - Add as New → Provide reason → Save duplicate
+6. Action completed
+7. Success message shown
+8. Form cleared for next entry
+```
+
+---
+
+## 🎨 Responsive Popup Design
+
+### **Mobile (< 768px)**
+
+```
+Display: Full-screen bottom sheet
+Animation: Slide up from bottom
+Height: Auto (content-based, max 90vh)
+Backdrop: 50% opacity black overlay
+Close: Swipe down or Cancel button
+
+Layout:
+┌─────────────────────────────┐
+│     [Drag Handle]           │ ← Swipe to close
+│                             │
+│  ⚠️ Duplicate Entry         │
+│                             │
+│  [Content stacked          │
+│   vertically]              │
+│                             │
+│  [Action buttons           │
+│   stacked vertically]      │
+│                             │
+│  [Cancel (full width)]     │
+└─────────────────────────────┘
+```
+
+### **Tablet (768px - 1023px)**
+
+```
+Display: Centered modal dialog
+Width: 80% of screen (max 600px)
+Animation: Fade in + scale up
+Backdrop: 60% opacity black overlay
+Close: X button or Cancel
+
+Layout:
+┌────────────────────────────────┐
+│ ⚠️ Duplicate Entry        [×] │
+│                                │
+│ [Content in                   │
+│  two-column where applicable] │
+│                                │
+│ [Action buttons horizontal]   │
+│ [Cancel] [Replace] [Add New]  │
+└────────────────────────────────┘
+```
+
+### **Desktop (1024px+)**
+
+```
+Display: Centered modal dialog
+Width: 500px fixed
+Animation: Fade in + scale up
+Backdrop: 70% opacity black overlay
+Close: X button, Cancel, or Esc key
+
+Layout:
+┌──────────────────────────────────┐
+│ ⚠️ Duplicate Entry          [×] │
+│                                  │
+│ [Content with side-by-side      │
+│  comparison of entries]         │
+│                                  │
+│ [Action buttons horizontal]     │
+│ [Cancel] [Replace] [Add New]    │
+└──────────────────────────────────┘
+```
+
+---
+
+## 🔐 Permission-Based Behavior
+
+### **Admin Role**
+
+```
+Can perform all actions:
+✅ View duplicate warnings
+✅ Replace existing entries
+✅ Add duplicate entries (force)
+✅ Edit existing entries
+✅ Delete entries
+✅ View audit log
+✅ Override duplicate prevention
+```
+
+### **Collector Role**
+
+```
+Limited actions:
+✅ View duplicate warnings
+⚠️ Cannot replace (must contact admin)
+⚠️ Can add duplicate only with reason
+✅ Can edit own entries (within same day)
+❌ Cannot delete entries
+❌ Cannot view full audit log
+
+Popup shows:
+"You don't have permission to replace entries.
+Please contact admin or cancel this entry."
+
+[Cancel] [Request Admin Override]
+```
+
+---
+
+## 📊 Reporting & Audit Trail
+
+### **Duplicate Entry Report**
+
+```
+Report shows:
+- All intentional duplicate entries
+- Farmer details
+- Both entry details (old vs new)
+- Reason provided
+- Who created it
+- Timestamp
+
+Filters:
+- Date range
+- Farmer
+- Shift
+- User who created
+
+Export: PDF, Excel
+```
+
+### **Replaced Entry Log**
+
+```
+Shows:
+- Original entry details
+- Replacement entry details
+- Who replaced
+- When replaced
+- Reason for replacement
+
+Allows:
+- View deleted entry details
+- Restore if needed (admin only)
+- Compare old vs new values
+```
+
+---
+
+## ⚡ Performance & UX Optimizations
+
+### **Debouncing**
+
+```
+Farmer Selection Change:
+├─ Wait 500ms after selection
+├─ Then check for duplicate
+└─ Prevents excessive queries while user is typing/selecting
+
+Date/Shift Change:
+├─ Wait 300ms after change
+├─ Then check for duplicate
+└─ Allows quick toggling without query spam
+```
+
+### **Caching**
+
+```
+Cache Strategy:
+├─ Store duplicate check results for 60 seconds
+├─ If same farmer + date + shift checked within 60s
+│   └─ Return cached result (no database query)
+├─ Clear cache on:
+│   - New entry saved
+│   - Entry deleted/replaced
+│   - Manual refresh
+└─ Reduces database load
+```
+
+### **Loading States**
+
+```
+During duplicate check:
+┌────────────────────────────┐
+│ Checking for duplicates... │
+│ [Spinner animation]        │
+└────────────────────────────┘
+
+Timeout: 5 seconds
+If timeout: Allow save with warning
+"Could not verify duplicates. Proceed anyway?"
+```
+
+---
+
+## 🧪 Test Scenarios
+
+### **Test Case 1: Prevent Accidental Duplicate**
+
+```
+Steps:
+1. Enter milk for Farmer F001, 28-Oct, Morning → Save
+2. Try to enter again for F001, 28-Oct, Morning
+Expected: Popup appears with warning
+Result: ✅ Duplicate prevented
+```
+
+### **Test Case 2: Allow Different Shift**
+
+```
+Steps:
+1. Enter milk for Farmer F001, 28-Oct, Morning → Save
+2. Enter milk for F001, 28-Oct, Evening
+Expected: No popup, saves normally (different shift)
+Result: ✅ Entry saved
+```
+
+### **Test Case 3: Allow Same Farmer Different Date**
+
+```
+Steps:
+1. Enter milk for Farmer F001, 28-Oct, Morning → Save
+2. Enter milk for F001, 29-Oct, Morning
+Expected: No popup, saves normally (different date)
+Result: ✅ Entry saved
+```
+
+### **Test Case 4: Intentional Duplicate with Reason**
+
+```
+Steps:
+1. Enter milk for Farmer F001, 28-Oct, Morning → Save
+2. Try to enter again for F001, 28-Oct, Morning
+3. Popup appears → Click "Add as New Entry"
+4. Enter reason: "Second collection - brought more milk"
+5. Confirm
+Expected: Both entries saved, second marked as duplicate
+Result: ✅ Duplicate saved with reason
+```
+
+### **Test Case 5: Replace Existing Entry**
+
+```
+Steps:
+1. Enter milk for Farmer F001, 28-Oct, Morning (Qty: 10L) → Save
+2. Realize quantity was wrong
+3. Try to enter again for F001, 28-Oct, Morning (Qty: 20L)
+4. Popup appears → Click "Replace Existing"
+5. Confirm replacement
+Expected: Old entry deleted, new entry saved, ledger adjusted
+Result: ✅ Entry replaced successfully
+```
+
+---
+
+## 📝 Error Handling
+
+### **Network/Database Errors**
+
+```
+If duplicate check fails:
+├─ Show warning: "Could not verify duplicates"
+├─ Offer options:
+│   ├─ [Retry Check]
+│   ├─ [Save Anyway] (with warning flag)
+│   └─ [Cancel]
+└─ Log error for admin review
+```
+
+### **Sync Conflicts**
+
+```
+If offline entry conflicts with synced entry:
+├─ Detect during sync
+├─ Mark as conflict
+├─ Notify admin
+├─ Show in "Sync Conflicts" report
+└─ Admin resolves manually
+```
+
+---
+
+## ✅ Success Criteria
+
+```
+Functional:
+✅ Duplicate detected within 500ms of trigger
+✅ Popup appears within 100ms of detection
+✅ All user actions work correctly (Cancel/Replace/Add)
+✅ Audit trail maintained for all actions
+✅ No false positives (different shift/date allowed)
+
+User Experience:
+✅ Clear messaging (no technical jargon)
+✅ Easy to understand options
+✅ Responsive on all devices
+✅ Fast duplicate checks (no UI lag)
+✅ Keyboard shortcuts work (Esc to cancel)
+
+Security:
+✅ Permission checks enforced
+✅ All actions logged
+✅ Data integrity maintained
+✅ Sync conflicts handled gracefully
+```
+
+---
+
+**This prompt provides complete specifications for implementing a duplicate entry prevention system with popup confirmations in the Dairify milk collection module. The system will detect when the same farmer, date, and shift combination is entered twice and prompt the user with clear options to handle the situation.**

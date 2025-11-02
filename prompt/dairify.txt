@@ -1,0 +1,570 @@
+
+---
+
+## 🎯 Project Overview
+
+**Project Name:** Dairify  
+**Type:** Complete Dairy Management System and can kept the record of shop (Offline-First)  
+**Target Users:** Dairy shop owners who collect milk from farmers and sell cattle products  
+**Core Value:** Works seamlessly offline with automatic cloud sync when internet is available
+
+---
+
+## 🏗️ Technical Architecture
+
+### **Tech Stack**
+- **Frontend (App + Web):** Flutter (cross-platform)
+- **Local Database:** Hive (offline storage for products, sales, stock, transactions)
+- **Backend:** Laravel (MVC architecture)
+- **Cloud Database:** PostgreSQL (official records, multi-device sync)
+- **Architecture Pattern:** MVC (Model-View-Controller)
+
+### **Offline-First Strategy**
+- All operations save immediately to Hive local database
+- Auto-sync to Laravel backend when internet is available
+- Manual "Sync Now" button for forced synchronization
+- Conflict resolution: Last-write-wins with timestamp tracking
+- Local backup creation (daily/weekly)
+- No data loss guarantee
+
+---
+
+## 🎨 Design Requirements
+
+### **UI/UX Specifications**
+- **Navigation:** Top navigation bar (not bottom)
+- **Responsiveness:** Fully responsive across mobile, tablet, and desktop
+- **Theme Support:** Both dark mode and light mode
+- **Branding:** 
+  - Logo: Use provided logo.jpg (milk drop with circuit board pattern)
+  - Splash screen: Display logo during app initialization
+  - Intro screen: Onboarding flow with logo
+
+### **Design Principles**
+- Clean, modern interface suitable for rural/semi-urban users
+- Large touch targets for easy mobile interaction
+- Clear visual hierarchy
+- Minimal cognitive load
+- Quick access to frequent actions (milk collection, payments)
+
+---
+
+## 👥 User Roles & Access Control
+
+### **Admin (Full Access)**
+- Complete system access
+- Farmer management (CRUD)
+- Milk collection entry
+- Payment & credit management
+- Stock management
+- Report generation
+- System settings
+- User management
+- Data backup & restore
+
+### **Collector (Limited Access)**
+- Milk collection entry only
+- View farmer basic details
+- View collection reports (own entries)
+- Cannot modify payments or stock
+
+**Authentication:** PIN or biometric login  
+**Security:** Encrypted local backups, role-based access control
+
+---
+
+## 📦 Core Modules & Features
+
+### **1. Farmer Management Module**
+
+**Purpose:** Unique identification and comprehensive farmer profile management
+
+**Data Structure:**
+```
+Farmer {
+  id: String (auto-generated: F001, F002, F003...)
+  name: String
+  village: String
+  address: String (optional)
+  phone: String (optional)
+  milkType: Enum [Cow, Buffalo, Both]
+  photo: String (path, optional)
+  runningBalance: Decimal (calculated)
+  createdAt: DateTime
+  updatedAt: DateTime
+  isActive: Boolean
+}
+```
+
+**Features:**
+- Auto-generate unique Farmer ID with prefix "F"
+- Search/filter by ID, name, village, phone
+- View running balance at a glance
+- Deactivate farmer (soft delete)
+- Photo capture/upload option
+- Balance history visualization
+
+---
+
+### **2. Milk Collection System**
+
+**Purpose:** Record daily milk collection with quality parameters and automatic payment calculation
+
+**Data Structure:**
+```
+MilkCollection {
+  id: String
+  farmerId: String (FK)
+  date: Date
+  shift: Enum [Morning, Evening]
+  quantity: Decimal (liters)
+  fat: Decimal (percentage)
+  snf: Decimal (percentage)
+  ratePerLiter: Decimal (auto-calculated from rate chart)
+  totalAmount: Decimal (auto-calculated)
+  collectorId: String (user who recorded)
+  isSynced: Boolean
+  createdAt: DateTime
+}
+```
+
+**Features:**
+- Quick entry form: Farmer ID → Quantity → FAT → SNF → Auto-calculate
+- Rate chart setup based on FAT/SNF ranges
+- Shift-based collection (Morning/Evening)
+- Duplicate entry prevention (same farmer, same shift, same date)
+- Print/share collection slip
+- Mark spoiled/rejected milk (deduct from total)
+- Real-time totals: liters collected, total payable
+- Collection summary by date/shift/farmer/village
+
+**Rate Chart Logic:**
+```
+Rate = Base Rate + (FAT Bonus) + (SNF Bonus)
+Example: ₹30 base + (6.0% FAT × ₹2) + (8.5% SNF × ₹1) = ₹42.5/liter
+```
+
+---
+
+### **3. Advance & Credit (Audharo) System**
+
+**Purpose:** Manage bidirectional money flow between shopkeeper and farmers
+
+**Data Structure:**
+```
+Transaction {
+  id: String
+  farmerId: String (FK)
+  type: Enum [MilkPayment, Advance, Credit, ProductPurchase, Settlement]
+  amount: Decimal
+  description: String
+  date: Date
+  runningBalance: Decimal (after this transaction)
+  isSynced: Boolean
+  createdAt: DateTime
+}
+```
+
+**Transaction Types:**
+1. **Milk Payment (+):** Auto-created from milk collection
+2. **Advance (+):** Farmer gives money in advance
+3. **Credit (-):** Farmer takes money/goods on credit
+4. **Product Purchase (-):** Farmer buys cattle products
+5. **Settlement (-):** Shopkeeper pays farmer (balance clearance)
+
+**Auto-Adjustment Logic:**
+```
+New Milk Collection:
+1. Calculate milk amount
+2. Check if farmer has credit balance
+3. Auto-deduct credit from milk payment
+4. Update running balance
+5. Show: "Milk: ₹800 - Credit: ₹100 = Net: ₹700"
+```
+
+**Features:**
+- Add advance payment (farmer → shopkeeper)
+- Record credit given (shopkeeper → farmer)
+- Auto-deduct credit from milk payments
+- Settlement workflow with payment mode (Cash/UPI/Bank)
+- Transaction history with filters
+- Outstanding credit report
+
+---
+
+### **4. Dairy Product/Feed Stock Module (Optional)**
+
+**Purpose:** Track inventory and sales of cattle products
+
+**Data Structure:**
+```
+Product {
+  id: String (P001, P002...)
+  name: String
+  category: Enum [Feed, Medicine, Salt, Mineral, Other]
+  unit: Enum [kg, packet, piece, liter]
+  purchasePrice: Decimal
+  sellingPrice: Decimal
+  currentStock: Decimal
+  minStockLevel: Decimal
+  expiryDate: Date (nullable)
+  isActive: Boolean
+}
+
+Sale {
+  id: String
+  farmerId: String (FK)
+  productId: String (FK)
+  quantity: Decimal
+  rate: Decimal
+  totalAmount: Decimal
+  paymentType: Enum [Cash, Advance, Credit]
+  date: Date
+  isSynced: Boolean
+}
+```
+
+**Features:**
+- Product catalog management
+- Stock in/out tracking
+- Low stock alerts
+- Expiry date warnings for medicines
+- Sale entry with auto-stock deduction
+- Payment type selection (Cash/Advance/Credit)
+- Stock report with current levels
+- Sale history by product/farmer
+
+---
+
+### **5. Farmer Ledger/Accounts**
+
+**Purpose:** Unified transaction view per farmer
+
+**Display:**
+```
+Farmer: Ramesh Patel (F001)
+Village: Dharampur
+Current Balance: ₹2,340
+
+Date       | Type            | Amount   | Balance
+-----------|-----------------|----------|----------
+25-Oct     | Milk (20L)      | +₹800    | +₹800
+26-Oct     | Salt Purchase   | -₹100    | +₹700
+27-Oct     | Advance Given   | +₹500    | +₹1,200
+28-Oct     | Milk (18L)      | +₹720    | +₹1,920
+28-Oct     | Credit Taken    | -₹500    | +₹1,420
+29-Oct     | Settlement      | -₹1,000  | +₹420
+```
+
+**Features:**
+- Date-wise chronological transaction list
+- Filter by date range, transaction type
+- Export to PDF/Excel
+- Print ledger statement
+- Running balance calculation
+- Transaction detail drill-down
+
+---
+
+### **6. Reports & Analytics**
+
+**Report Types:**
+
+1. **Milk Collection Report**
+   - Daily/weekly/monthly totals
+   - By shift (Morning/Evening)
+   - By farmer, village, milk type
+   - Average FAT/SNF
+   - Total liters, total amount
+
+2. **Farmer Ledger Report**
+   - Complete transaction history
+   - Current balance status
+   - Date range filtering
+
+3. **Advance/Credit Report**
+   - Outstanding credit list
+   - Advance balance list
+   - Aging analysis (0-7 days, 8-15 days, 15+ days)
+
+4. **Stock Report**
+   - Current stock levels
+   - Low stock alerts
+   - Stock value (purchase vs selling)
+   - Movement history
+
+5. **Profit Summary**
+   - Total milk collection amount
+   - Total product sales
+   - Total expenses
+   - Net profit/loss
+
+**Export Options:** PDF, Excel, Print
+
+---
+
+## 🔄 Sync Strategy
+
+### **Local-First Architecture**
+
+**Write Flow:**
+```
+User Action → Validate → Save to Hive → Update UI → Queue for Sync
+```
+
+**Sync Flow:**
+```
+1. Check internet connectivity
+2. If online:
+   - Fetch unsynced records from Hive
+   - Send to Laravel API endpoint
+   - On success: Mark as synced in Hive
+   - On failure: Retry with exponential backoff
+3. Download server updates
+4. Resolve conflicts (last-write-wins with timestamp)
+```
+
+**Conflict Resolution:**
+- Timestamp-based: Most recent update wins
+- Server timestamp is authoritative
+- Log conflicts for admin review
+
+**Sync Indicators:**
+- Green dot: All synced
+- Yellow dot: Syncing in progress
+- Red dot: Sync errors (show count)
+- "Last synced: 5 minutes ago"
+
+---
+
+## 🗄️ Database Schema Design
+
+### **Hive Local Schema (Flutter)**
+```
+Boxes:
+- farmers
+- milkCollections
+- transactions
+- products
+- sales
+- syncQueue
+- settings
+```
+
+### **PostgreSQL Cloud Schema (Laravel)**
+```
+Tables:
+- users
+- farmers
+- milk_collections
+- transactions
+- products
+- sales
+- rate_charts
+- sync_logs
+- backups
+```
+
+---
+
+## 🔐 Security Requirements
+
+1. **Authentication:**
+   - PIN-based login (4-6 digits)
+   - Biometric option (fingerprint/face)
+   - Auto-logout after 30 min inactivity
+
+2. **Authorization:**
+   - Role-based access control (Admin/Collector)
+   - Route guards in Flutter
+   - API middleware in Laravel
+
+3. **Data Protection:**
+   - Encrypted Hive storage
+   - HTTPS for API communication
+   - JWT token authentication
+   - Secure backup encryption
+
+4. **Audit Trail:**
+   - Log all critical operations
+   - Track who created/modified records
+   - Sync logs for troubleshooting
+
+---
+
+## 📱 Screen Flow & Navigation
+
+### **Authentication Flow**
+```
+Splash Screen (logo) → Intro Screens (3 slides) → Login → Home Dashboard
+```
+
+### **Main Navigation (Top Bar)**
+```
+[Logo] Dairify    [Home] [Farmers] [Milk] [Products] [Reports] [Settings] [Profile]
+```
+
+### **Home Dashboard**
+- Today's collection summary
+- Pending credit alerts
+- Low stock alerts
+- Quick actions (Add Milk, Add Farmer)
+- Sync status indicator
+
+### **Key User Journeys**
+
+**1. Record Milk Collection:**
+```
+Home → Milk Collection → Select Farmer → Enter Details → Save → Print Slip (optional)
+```
+
+**2. Add New Farmer:**
+```
+Home → Farmers → Add New → Fill Form → Save
+```
+
+**3. Record Product Sale:**
+```
+Home → Products → Sales → Select Farmer → Select Product → Enter Quantity → Choose Payment Type → Save
+```
+
+**4. View Farmer Ledger:**
+```
+Home → Farmers → Select Farmer → View Ledger
+```
+
+**5. Generate Report:**
+```
+Home → Reports → Select Report Type → Set Filters → Generate → Export/Print
+```
+
+---
+
+## 🎯 Development Priorities
+
+### **Phase 1: Core MVP (Weeks 1-4)**
+1. Setup Flutter project structure (MVC pattern)
+2. Setup Laravel API (authentication, basic CRUD)
+3. Implement Farmer Management (CRUD)
+4. Implement Milk Collection System
+5. Basic Transaction/Ledger System
+6. Hive local storage integration
+7. Basic sync mechanism
+
+### **Phase 2: Advanced Features (Weeks 5-8)**
+1. Advance & Credit system with auto-adjustment
+2. Product/Stock management module
+3. Comprehensive reports
+4. PDF/Excel export
+5. Print functionality
+6. Advanced sync with conflict resolution
+
+### **Phase 3: Polish & Deploy (Weeks 9-10)**
+1. Dark/Light theme implementation
+2. Responsive design optimization
+3. Performance optimization
+4. Security hardening
+5. User testing & bug fixes
+6. Documentation & deployment
+
+---
+
+## 📝 Code Quality Standards
+
+1. **Flutter Code:**
+   - Follow official Flutter style guide
+   - Use meaningful variable/function names
+   - Implement proper error handling
+   - Add comments for complex logic
+   - Use const widgets where possible
+   - Implement proper state management (Provider/Riverpod)
+
+2. **Laravel Code:**
+   - Follow PSR-12 coding standards
+   - Use Laravel best practices
+   - Implement service layer pattern
+   - Add API documentation
+   - Write unit tests for critical logic
+   - Use Laravel resources for API responses
+
+3. **General:**
+   - Version control with Git
+   - Feature branching strategy
+   - Code reviews before merge
+   - Continuous integration setup
+   - Comprehensive README
+
+---
+
+## 🚀 Deployment Requirements
+
+1. **Flutter App:**
+   - Android APK (minimum SDK 21)
+   - iOS IPA (iOS 12+)
+   - Web build (optional)
+
+2. **Laravel Backend:**
+   - Production server (Ubuntu/Linux)
+   - PostgreSQL database
+   - SSL certificate
+   - Daily automated backups
+   - Monitoring & logging
+
+3. **Documentation:**
+   - User manual (English + local language)
+   - Admin guide
+   - API documentation
+   - Setup/installation guide
+
+---
+
+## 🎨 UI Component Library Suggestions
+
+- **Flutter Packages:**
+  - `hive` & `hive_flutter` - Local database
+  - `provider` or `riverpod` - State management
+  - `dio` - API calls
+  - `connectivity_plus` - Network status
+  - `pdf` - PDF generation
+  - `image_picker` - Photo capture
+  - `local_auth` - Biometric authentication
+  - `flutter_secure_storage` - Secure data storage
+  - `intl` - Date/number formatting
+
+---
+
+## 💡 Special Considerations
+
+1. **Village/Rural Context:**
+   - Simple, intuitive UI (minimal training needed)
+   - Offline-first approach (poor network areas)
+   - Multiple language support (future scope)
+   - Voice input option (future scope)
+
+2. **Performance:**
+   - Fast milk entry (under 30 seconds per farmer)
+   - Quick farmer search
+   - Efficient local database queries
+   - Lazy loading for large lists
+
+3. **Reliability:**
+   - No data loss even if app crashes
+   - Auto-save on form changes
+   - Background sync
+   - Regular local backups
+
+---
+
+## ✅ Success Criteria
+
+- App works 100% offline
+- Sync completes successfully when online
+- Milk collection entry takes < 30 seconds
+- Zero data loss
+- Running balance always accurate
+- Reports generate within 5 seconds
+- App supports 500+ farmers without lag
+
+---
+
+**This prompt provides a complete technical specification for developing the Dairify system. Share this with your development team or use it to guide AI-assisted development tools.**

@@ -1,0 +1,208 @@
+NOTE:- 
+
+Do **not** re-implement already working code unless it conflicts with better logic.
+- Keep only the most efficient, maintainable version of each feature.
+- Maintain offline-first behavior (no dependency on internet).
+- No user data should be lost after cleanup.
+- Ensure backward compatibility with existing Hive boxes.
+
+code should be responsive .
+
+
+
+
+
+Once a user registers or logs in, their data is saved locally on the device.
+Even after logout or app restart, data remains saved (unless manually deleted).
+When they log in again, the system recognizes the user and shows their data (e.g., milk records, farmers, transactions, etc.) instantly — even without internet.
+Sync with the server happens only when online.
+Here’s your complete Context Engineering Prompt for Copilot / ChatGPT 👇
+⚙️ Context Engineering Prompt — Persistent Local Storage & Auto User Session
+You are an expert Flutter developer building a Dairy Management System (offline-first).
+CONTEXT:
+- The app is used by dairy shopkeepers in villages with limited internet connectivity.
+- The app must work fully offline and sync data only when internet is available.
+- All user data (farmers, milk collections, rates, etc.) must be saved on the device itself.
+REQUIREMENTS:
+------------------------
+🧾 TASK 1: PERSISTENT LOCAL DATA STORAGE
+------------------------
+1. Use **Hive** for local data storage (encrypted if possible).
+2. All major modules must save data locally:
+   - Farmer registration
+   - Milk collection records
+   - Sales & purchases
+   - Advance payments
+   - Stock details
+   - Rate charts
+3. Once saved, data should remain even after:
+   - App restart
+   - Logout/login
+   - No internet
+4. On next app open or login, load all data instantly from local Hive DB.
+------------------------
+🔑 TASK 2: LOGIN & USER SESSION HANDLING
+------------------------
+1. When a user registers or logs in for the first time:
+   - Store their user profile, token, and related data locally.
+   - Sync with backend (Laravel) if internet is available.
+2. On subsequent logins:
+   - If credentials match locally stored data → allow access instantly.
+   - If internet is available → verify token with server, else continue offline.
+3. On logout:
+   - Clear session token but **keep user’s data** stored locally.
+   - So next time, if the user logs in again with the same ID/password, show their existing records.
+4. Add an optional “Remember Me” toggle to auto-login on app start.
+------------------------
+📶 TASK 3: OFFLINE-FIRST BEHAVIOR
+------------------------
+1. App should not depend on the internet for daily operations.
+2. All add/update/delete actions must store locally first (Hive).
+3. SyncService should:
+   - Run in the background when internet is detected.
+   - Upload unsynced records to the cloud (Laravel API).
+   - Update local data if newer data found on server.
+4. Use timestamps (created_at, updated_at, synced_at) for conflict resolution.
+5. If user switches device, they can re-login to download their data again.
+------------------------
+💡 TASK 4: IMPLEMENTATION DETAILS
+------------------------
+- Use `Hive` for structured offline storage (boxes per module).
+- Use `flutter_secure_storage` for sensitive info (token, password hash).
+- Create `SessionManager` service to manage:
+  - User login state
+  - Auto-login behavior
+  - Logout and data retention
+- Show local data instantly when opening app.
+- Sync progress indicator (show when syncing in background).
+------------------------
+🧩 TASK 5: EXAMPLE USE CASE
+------------------------
+Example:
+1. User creates an account “Shiv Dairy”.
+2. They register farmers and collect milk daily.
+3. Even after logout or restarting app, all their data (farmers, milk collection history, rates) remain saved.
+4. When user logs in again with the same ID/password:
+   - The app loads their local database immediately.
+   - Syncs updates silently in the background if internet available.
+5. If new farmer/milk entry added offline → automatically syncs to server later.
+------------------------
+⚙️ TASK 6: OUTPUT EXPECTATION
+------------------------
+Provide:
+1. Flutter implementation using Hive for persistent storage.
+2. Local session manager (auto-login if data exists).
+3. Example login logic:
+   - Save user on first login.
+   - On next login, load from local storage.
+4. Explanation of data flow (local-first → sync when online).
+5. Recommendations for data encryption and safety.
+6. Responsive design maintained.
+------------------------
+✅ FINAL REQUIREMENTS
+------------------------
+- Offline-first (Hive local DB)
+- Syncs when internet available
+- Persistent user data even after logout
+- Fast login without server delay
+- Secure storage for tokens and passwords
+- Auto-login option
+💡 In Short
+With this prompt, your app will behave like:
+Facebook/WhatsApp-style local login
+Works 100% offline
+All data stored in device (Hive)
+Syncs automatically when back online
+next step ..
+You are an expert Flutter developer building an offline-first dairy management app (Dairify).  
+The app must store all important data locally on the user’s device so that users can continue working even without internet connectivity.
+---
+### CONTEXT:
+- The app manages dairy operations like milk collection, farmer records, and daily transactions.
+- The shopkeeper collects milk from multiple farmers daily, even in remote villages where internet may not be available.
+- All app data (user profile, farmers, milk collections, rates, etc.) should be stored **locally on the device**.
+- When internet becomes available, data can sync with the server, but the app must still be **fully functional offline**.
+- If a user logs in once, they should not need to log in again (like Facebook auto-login).
+- The system should automatically load the correct user data from the device on next app start.
+- User authentication and session data should be securely stored locally.
+- Multiple users should be supported, each with their own locally saved data (shop branches or different users).
+---
+### REQUIREMENTS:
+1. **Offline-First Architecture**
+   - Store all user, farmer, and milk collection data locally on the device (e.g., using Hive).
+   - Load local data immediately on app start.
+   - Auto-sync with server only when online.
+
+2. **Auto-Login Behavior**
+   - Once a user successfully logs in or registers, store their credentials/session securely.
+   - On app restart, if the session exists, skip login and open the dashboard directly.
+   - If the user logs out, clear only session data (not business data).
+
+3. **Local Storage Scope**
+   - Save and retrieve:
+     - User profile (ID, name, email)
+     - Farmers (with unique ID or code for identification)
+     - Milk collections (quantity, rate, total amount, date)
+     - Local settings (language, theme, etc.)
+   - Data should persist even after app restart or offline operation.
+
+4. **Security**
+   - Encrypt locally stored session or tokens (e.g., using `flutter_secure_storage`).
+   - Sensitive business data (farmer payments, rates) can use encrypted Hive boxes.
+   - Prevent unauthorized access if the device is shared (optional PIN/biometric support).
+
+5. **Behavioral Flow**
+   - First-time user → Register account → Data saved locally.
+   - On next launch → App detects saved session → Auto-login.
+   - If the user logs out → Clear session but keep local business data.
+   - If user switches accounts → Load that account’s local data.
+
+6. **Testing Scenarios**
+   - App restarted → Auto-login works.
+   - Offline mode → All data accessible and editable.
+   - Data saved → Still available after reboot.
+   - Multiple users → Each user’s data isolated correctly.
+   - Logout → Session cleared but data preserved.
+
+7. **Performance**
+   - All local operations must respond within 2 seconds.
+   - Data loading optimized for 10,000+ records.
+   - No network dependency for basic tasks (login, view data, add records).
+
+8. **UI/UX Behavior**
+   - Show “Loading local data…” splash while reading stored session.
+   - Auto-redirect user to dashboard if session is valid.
+   - Clear messaging if session is expired or user not found.
+   - Maintain smooth transitions and proper offline indicators.
+
+---
+
+### OUTPUT EXPECTATION:
+Please provide:
+1. Explanation of how the local session and data persistence system should be structured (Hive + Secure Storage).
+2. Flow of operations for:
+   - Register → Login → Auto-Login → Logout
+3. Sync logic description (when and how to update server data).
+4. Key security practices for local session handling.
+5. Testing and edge case considerations.
+
+---
+
+### CONSTRAINTS:
+- Must work completely offline.
+- Support 10,000+ local records efficiently.
+- Session load time < 3 seconds.
+- Secure local storage (no plain text credentials).
+- Multi-user safe.
+
+
+NOTE:- 
+
+Do **not** re-implement already working code unless it conflicts with better logic.
+- Keep only the most efficient, maintainable version of each feature.
+- Maintain offline-first behavior (no dependency on internet).
+- No user data should be lost after cleanup.
+- Ensure backward compatibility with existing Hive boxes.
+
+
+

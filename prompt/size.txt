@@ -1,0 +1,680 @@
+Dairify - Mobile UI Size Optimization & Smart Form Behavior
+Ultimate Context Engineering Prompt for Complete Fix
+
+🎯 PRIMARY OBJECTIVES
+
+Reduce ALL sizes - fonts, icons, fields, spacing for mobile optimization
+Implement collapsible sections - Date/Time and FAT/SNF in expandable dropdowns
+Smart placeholder auto-fill - Show previous values, save on Enter without typing
+Clean initial state - Remove default "45.0" rate value, show blank field
+Reorder form fields - Quantity & Rate first, then optional sections below
+
+
+📐 PART 1: MOBILE SIZE REDUCTION (Critical Priority)
+Problem Statement:
+CURRENT STATE (Mobile):
+❌ Font sizes too large (16-18sp body text, 20-24sp headings)
+❌ Icons too large (24-28dp)
+❌ Text fields too tall (56-60dp height)
+❌ Padding too generous (16-24dp everywhere)
+❌ Overall form feels cramped and cluttered
+❌ Takes too much vertical space
+❌ User has to scroll too much
+
+REQUIRED STATE (Mobile):
+✅ Font sizes: 12-14sp body text, 16-18sp headings
+✅ Icons: 18-20dp (smaller, compact)
+✅ Text fields: 48dp height (still touch-friendly but compact)
+✅ Padding: 8-12dp (tighter spacing)
+✅ More content visible without scrolling
+✅ Clean, modern, space-efficient design
+Size Specifications for Mobile (<768px):
+dart// TYPOGRAPHY SIZES (Mobile Only)
+Heading 1 (Screen Title): 18sp, FontWeight.w600
+Heading 2 (Section Title): 16sp, FontWeight.w600
+Heading 3 (Card Title): 14sp, FontWeight.w600
+Body Large: 14sp, FontWeight.normal
+Body Medium: 13sp, FontWeight.normal
+Body Small: 12sp, FontWeight.normal
+Caption/Helper: 11sp, FontWeight.normal
+Label: 12sp, FontWeight.w500
+
+// ICON SIZES (Mobile Only)
+Large Icons (Feature icons): 20dp
+Medium Icons (Field icons): 18dp
+Small Icons (Utility icons): 16dp
+AppBar Icons: 22dp
+
+// FIELD DIMENSIONS (Mobile Only)
+TextField Height: 48dp
+TextField Padding: 12dp horizontal, 10dp vertical
+Border Radius: 8dp (less rounded, more compact)
+Icon-to-Text Spacing: 8dp
+
+// SPACING SYSTEM (Mobile Only)
+XS: 4dp (icon-label gap)
+S: 8dp (between elements in same group)
+M: 12dp (between form fields)
+L: 16dp (between sections)
+XL: 20dp (screen padding)
+
+// CARD DIMENSIONS (Mobile Only)
+Card Padding: 12dp
+Card Elevation: 1-2dp (subtle)
+Card Border Radius: 12dp
+Implementation Requirements:
+dart// Create: lib/utils/mobile_sizes.dart
+
+class MobileSizes {
+  // Only use these sizes when screen width < 768px
+  
+  // Typography
+  static const double screenTitle = 18.0;
+  static const double sectionTitle = 16.0;
+  static const double cardTitle = 14.0;
+  static const double bodyLarge = 14.0;
+  static const double bodyMedium = 13.0;
+  static const double bodySmall = 12.0;
+  static const double caption = 11.0;
+  static const double label = 12.0;
+  
+  // Icons
+  static const double iconLarge = 20.0;
+  static const double iconMedium = 18.0;
+  static const double iconSmall = 16.0;
+  static const double iconAppBar = 22.0;
+  
+  // Fields
+  static const double fieldHeight = 48.0;
+  static const double fieldPaddingH = 12.0;
+  static const double fieldPaddingV = 10.0;
+  static const double borderRadius = 8.0;
+  
+  // Spacing
+  static const double spaceXS = 4.0;
+  static const double spaceS = 8.0;
+  static const double spaceM = 12.0;
+  static const double spaceL = 16.0;
+  static const double spaceXL = 20.0;
+  
+  // Cards
+  static const double cardPadding = 12.0;
+  static const double cardRadius = 12.0;
+  static const double cardElevation = 1.5;
+}
+
+// USAGE in widgets:
+final isMobile = MediaQuery.of(context).size.width < 768;
+
+Text(
+  'Add Collection',
+  style: TextStyle(
+    fontSize: isMobile ? MobileSizes.screenTitle : 24.0,
+    fontWeight: FontWeight.w600,
+  ),
+)
+
+Icon(
+  Icons.water_drop,
+  size: isMobile ? MobileSizes.iconMedium : 24.0,
+)
+
+TextField(
+  decoration: InputDecoration(
+    contentPadding: EdgeInsets.symmetric(
+      horizontal: isMobile ? MobileSizes.fieldPaddingH : 16.0,
+      vertical: isMobile ? MobileSizes.fieldPaddingV : 12.0,
+    ),
+  ),
+)
+```
+
+---
+
+## 🔽 PART 2: COLLAPSIBLE SECTIONS (Date/Time & FAT/SNF)
+
+### **Problem Statement:**
+```
+CURRENT STATE:
+❌ Date and Time always visible taking space
+❌ FAT and SNF always visible even when optional
+❌ Form feels too long and cluttered
+❌ User overwhelmed with too many fields
+
+REQUIRED STATE:
+✅ Date/Time collapsed by default (auto-captured, expandable if needed)
+✅ FAT/SNF collapsed by default (expandable if quality tracking needed)
+✅ Main focus on Quantity and Rate (essential fields)
+✅ Cleaner, simpler form for quick entry
+```
+
+### **Form Field Order (Top to Bottom):**
+```
+1. Farmer Selection Dropdown (Required)
+2. Shift Radio Buttons (Morning/Evening - Auto-selected)
+3. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. Quantity Field (Required, with smart placeholder)
+5. Rate Field (Required, with smart placeholder)
+6. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. 📅 Date & Time (Expandable Section - Collapsed by default)
+   ├─ Green badge: "✓ Auto-captured from device"
+   ├─ Tap to expand if backdating needed
+   └─ Shows: Date field, Time field
+8. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. 📊 Quality Parameters (Expandable Section - Collapsed by default)
+   ├─ Grey badge: "Optional - for quality tracking"
+   ├─ Tap to expand if needed
+   └─ Shows: FAT field, SNF field
+10. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+11. Amount Display Card (Auto-calculated, read-only)
+12. Save Button (Large, prominent)
+Expandable Section Implementation:
+dart// Date & Time Expandable Section
+ExpansionTile(
+  tilePadding: EdgeInsets.all(12),
+  childrenPadding: EdgeInsets.all(12),
+  initiallyExpanded: false, // Collapsed by default
+  title: Row(
+    children: [
+      Icon(Icons.calendar_today, size: MobileSizes.iconMedium),
+      SizedBox(width: 8),
+      Text(
+        'Date & Time',
+        style: TextStyle(
+          fontSize: MobileSizes.bodyMedium,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ],
+  ),
+  subtitle: Container(
+    margin: EdgeInsets.only(top: 6),
+    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    decoration: BoxDecoration(
+      color: Colors.green.shade50,
+      borderRadius: BorderRadius.circular(4),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.check_circle, size: 12, color: Colors.green),
+        SizedBox(width: 4),
+        Text(
+          'Auto-captured from device',
+          style: TextStyle(
+            fontSize: MobileSizes.caption,
+            color: Colors.green.shade800,
+          ),
+        ),
+      ],
+    ),
+  ),
+  children: [
+    // Date TextField
+    TextField(
+      controller: _dateController,
+      decoration: InputDecoration(
+        labelText: 'Date',
+        labelStyle: TextStyle(fontSize: MobileSizes.bodySmall),
+        helperText: 'Tap to change if needed',
+        helperStyle: TextStyle(fontSize: MobileSizes.caption),
+      ),
+    ),
+    SizedBox(height: 12),
+    // Time TextField
+    TextField(
+      controller: _timeController,
+      decoration: InputDecoration(
+        labelText: 'Time',
+        labelStyle: TextStyle(fontSize: MobileSizes.bodySmall),
+      ),
+    ),
+  ],
+)
+
+// FAT & SNF Expandable Section
+ExpansionTile(
+  tilePadding: EdgeInsets.all(12),
+  childrenPadding: EdgeInsets.all(12),
+  initiallyExpanded: false, // Collapsed by default
+  title: Row(
+    children: [
+      Icon(Icons.science, size: MobileSizes.iconMedium),
+      SizedBox(width: 8),
+      Text(
+        'Quality Parameters',
+        style: TextStyle(
+          fontSize: MobileSizes.bodyMedium,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ],
+  ),
+  subtitle: Container(
+    margin: EdgeInsets.only(top: 6),
+    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    decoration: BoxDecoration(
+      color: Colors.grey.shade100,
+      borderRadius: BorderRadius.circular(4),
+    ),
+    child: Text(
+      'Optional - for quality tracking',
+      style: TextStyle(
+        fontSize: MobileSizes.caption,
+        color: Colors.grey.shade700,
+      ),
+    ),
+  ),
+  children: [
+    // FAT TextField
+    TextField(
+      controller: _fatController,
+      keyboardType: TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(
+        labelText: 'FAT (%)',
+        labelStyle: TextStyle(fontSize: MobileSizes.bodySmall),
+        hintText: 'Enter FAT value',
+        hintStyle: TextStyle(fontSize: MobileSizes.bodySmall),
+      ),
+    ),
+    SizedBox(height: 12),
+    // SNF TextField
+    TextField(
+      controller: _snfController,
+      keyboardType: TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(
+        labelText: 'SNF (%)',
+        labelStyle: TextStyle(fontSize: MobileSizes.bodySmall),
+        hintText: 'Enter SNF value',
+        hintStyle: TextStyle(fontSize: MobileSizes.bodySmall),
+      ),
+    ),
+  ],
+)
+```
+
+---
+
+## 💡 PART 3: SMART PLACEHOLDER AUTO-FILL SYSTEM
+
+### **Problem Statement:**
+```
+CURRENT STATE:
+❌ Rate field shows "45.0" on every new entry (confusing)
+❌ User has to clear and retype even if value is same
+❌ No visual indication of previous values
+❌ Entering same values repeatedly is tedious
+
+REQUIRED BEHAVIOR:
+✅ Rate field starts BLANK (empty) on first-time farmer entry
+✅ On subsequent entries for SAME farmer:
+   - Quantity field shows placeholder: "Last: 18.5 L"
+   - Rate field shows placeholder: "Last: रु 65/L"
+   - FAT field shows placeholder: "Last: 5%"
+   - SNF field shows placeholder: "Last: 8%"
+✅ If user presses Enter/Tab WITHOUT typing:
+   - Use placeholder value automatically
+   - Move to next field
+✅ If user types anything:
+   - Clear placeholder
+   - Use new typed value
+✅ On form submit (Save button):
+   - Save whatever is in fields (typed OR placeholder values)
+Implementation Logic:
+dart// STEP 1: Fetch last entry when farmer selected
+Future<void> _onFarmerSelected(String farmerId) async {
+  // Query local database
+  final lastEntry = await _database.getLastMilkEntry(farmerId);
+  
+  if (lastEntry != null) {
+    setState(() {
+      // Store previous values
+      _previousQuantity = lastEntry.quantity;
+      _previousRate = lastEntry.rate;
+      _previousFAT = lastEntry.fat;
+      _previousSNF = lastEntry.snf;
+      
+      // Set placeholders (don't fill text controllers)
+      _quantityPlaceholder = 'Last: ${lastEntry.quantity} L';
+      _ratePlaceholder = 'Last: रु ${lastEntry.rate}/L';
+      _fatPlaceholder = lastEntry.fat != null ? 'Last: ${lastEntry.fat}%' : null;
+      _snfPlaceholder = lastEntry.snf != null ? 'Last: ${lastEntry.snf}%' : null;
+    });
+  } else {
+    // First time entry for this farmer
+    setState(() {
+      _previousQuantity = null;
+      _previousRate = null;
+      _previousFAT = null;
+      _previousSNF = null;
+      _quantityPlaceholder = 'Enter quantity';
+      _ratePlaceholder = 'Enter rate';
+      _fatPlaceholder = 'Enter FAT value';
+      _snfPlaceholder = 'Enter SNF value';
+    });
+  }
+}
+
+// STEP 2: TextField with smart placeholder
+TextField(
+  controller: _quantityController,
+  focusNode: _quantityFocus,
+  keyboardType: TextInputType.numberWithOptions(decimal: true),
+  textInputAction: TextInputAction.next,
+  decoration: InputDecoration(
+    labelText: 'Quantity (Liters) *',
+    hintText: _quantityPlaceholder, // Shows "Last: 18.5 L"
+    hintStyle: TextStyle(
+      color: Colors.blue.shade600, // Different color to show it's previous value
+      fontStyle: FontStyle.italic,
+      fontSize: MobileSizes.bodySmall,
+    ),
+  ),
+  onFieldSubmitted: (_) {
+    // If user didn't type anything, use placeholder value
+    if (_quantityController.text.isEmpty && _previousQuantity != null) {
+      _quantityController.text = _previousQuantity.toString();
+    }
+    // Move to next field
+    FocusScope.of(context).requestFocus(_rateFocus);
+  },
+)
+
+// STEP 3: On form submit, use placeholder if field empty
+void _submitForm() {
+  // Quantity
+  double quantity;
+  if (_quantityController.text.isNotEmpty) {
+    quantity = double.parse(_quantityController.text);
+  } else if (_previousQuantity != null) {
+    quantity = _previousQuantity!; // Use placeholder value
+  } else {
+    // Show error: Quantity required
+    return;
+  }
+  
+  // Rate
+  double rate;
+  if (_rateController.text.isNotEmpty) {
+    rate = double.parse(_rateController.text);
+  } else if (_previousRate != null) {
+    rate = _previousRate!; // Use placeholder value
+  } else {
+    // Show error: Rate required
+    return;
+  }
+  
+  // FAT (optional)
+  double? fat;
+  if (_fatController.text.isNotEmpty) {
+    fat = double.parse(_fatController.text);
+  } else if (_previousFAT != null) {
+    fat = _previousFAT; // Use placeholder value if available
+  }
+  
+  // SNF (optional)
+  double? snf;
+  if (_snfController.text.isNotEmpty) {
+    snf = double.parse(_snfController.text);
+  } else if (_previousSNF != null) {
+    snf = _previousSNF; // Use placeholder value if available
+  }
+  
+  // Save entry
+  _saveMilkEntry(quantity, rate, fat, snf);
+}
+Visual Indicator for Placeholder Values:
+dart// Show badge next to field when placeholder is active
+Row(
+  children: [
+    Expanded(
+      child: TextField(
+        controller: _quantityController,
+        decoration: InputDecoration(
+          labelText: 'Quantity (Liters) *',
+          hintText: _quantityPlaceholder,
+          hintStyle: TextStyle(
+            color: Colors.blue.shade600,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ),
+    ),
+    if (_previousQuantity != null && _quantityController.text.isEmpty)
+      Padding(
+        padding: EdgeInsets.only(left: 8),
+        child: Chip(
+          label: Text(
+            'Auto',
+            style: TextStyle(fontSize: 10),
+          ),
+          backgroundColor: Colors.blue.shade100,
+          padding: EdgeInsets.all(2),
+        ),
+      ),
+  ],
+)
+```
+
+---
+
+## 🧹 PART 4: REMOVE DEFAULT "45.0" RATE VALUE
+
+### **Problem Statement:**
+```
+CURRENT STATE:
+❌ Rate field shows "45.0" by default on every new entry
+❌ User has to delete "45.0" and type new value
+❌ Confusing - looks like it's pre-filled
+❌ Not clear if this is a suggestion or actual value
+
+REQUIRED STATE:
+✅ Rate field is COMPLETELY BLANK on first-time farmer entry
+✅ Rate field shows placeholder "Last: रु 65/L" on subsequent entries
+✅ No pre-filled values in the actual text field
+✅ Only placeholder text (grey, italic) suggesting previous value
+Implementation:
+dart// WRONG - Don't do this:
+final _rateController = TextEditingController(text: '45.0'); // ❌
+
+// CORRECT - Do this:
+final _rateController = TextEditingController(); // Empty by default ✅
+
+// Set placeholder based on previous entry
+TextField(
+  controller: _rateController, // Empty
+  decoration: InputDecoration(
+    labelText: 'Rate (रु/Liter) *',
+    hintText: _ratePlaceholder, // "Last: रु 65/L" OR "Enter rate"
+    hintStyle: TextStyle(
+      color: _previousRate != null ? Colors.blue.shade600 : Colors.grey,
+      fontStyle: _previousRate != null ? FontStyle.italic : FontStyle.normal,
+      fontSize: MobileSizes.bodySmall,
+    ),
+    prefix: Text('रु '), // Currency symbol prefix
+  ),
+)
+
+// On farmer selection:
+if (lastEntry != null) {
+  _ratePlaceholder = 'Last: ${lastEntry.rate}/L';
+} else {
+  _ratePlaceholder = 'Enter rate per liter';
+}
+```
+
+---
+
+## 📋 PART 5: COMPLETE FORM SPECIFICATION
+
+### **Add Collection Form - Final Structure:**
+```
+┌─────────────────────────────────────────┐
+│ [←] Add Collection              [⋮]     │ ← AppBar (height: 56dp)
+├─────────────────────────────────────────┤
+│                                         │
+│ [Search Farmer]                         │ ← Dropdown, height: 48dp
+│ Type name or ID                         │
+│                                         │
+│ ☀ Morning  ◯ Evening          [Auto]   │ ← Radio group, compact
+│ Auto-detected based on current time     │ ← Helper text, 11sp
+│                                         │
+│ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ │
+│                                         │
+│ 💧 Milk Details                         │ ← Section header, 14sp, bold
+│                                         │
+│ [  ] Quantity (Liters) *                │ ← TextField, height: 48dp
+│      Last: 18.5 L                       │ ← Placeholder (blue, italic)
+│                                         │
+│ [रु ] Rate (रु/Liter) *                 │ ← TextField, height: 48dp
+│       Last: 65/L                        │ ← Placeholder (blue, italic)
+│                                         │
+│ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ │
+│                                         │
+│ ▶ 📅 Date & Time                        │ ← ExpansionTile (collapsed)
+│   ✓ Auto-captured from device          │ ← Badge (green)
+│                                         │
+│ ▶ 📊 Quality Parameters                 │ ← ExpansionTile (collapsed)
+│   Optional - for quality tracking      │ ← Badge (grey)
+│                                         │
+│ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ │
+│                                         │
+│ ┌─────────────────────────────────────┐ │
+│ │ Total Amount                        │ │ ← Card, padding: 12dp
+│ │ रु 1,202.50                         │ │ ← Amount (18sp, bold)
+│ │ 💡 18.5 L × रु 65/L                │ │ ← Hint (11sp)
+│ └─────────────────────────────────────┘ │
+│                                         │
+│ [       💾 Save Entry        ]         │ ← Button, height: 48dp
+│                                         │
+└─────────────────────────────────────────┘
+
+Screen Padding: 16dp (sides), 12dp (top/bottom between elements)
+Total Form Height: ~550-600dp (fits most mobile screens)
+```
+
+---
+
+## ✅ IMPLEMENTATION CHECKLIST
+
+### **Size Optimization:**
+```
+□ Create MobileSizes class with all dimensions
+□ Reduce AppBar title to 18sp on mobile
+□ Reduce all body text to 13-14sp on mobile
+□ Reduce all icons to 18-20dp on mobile
+□ Set TextField height to 48dp on mobile
+□ Reduce padding to 12dp between fields
+□ Reduce section spacing to 16dp
+□ Test on actual mobile device (verify readability)
+```
+
+### **Collapsible Sections:**
+```
+□ Wrap Date/Time in ExpansionTile (collapsed by default)
+□ Wrap FAT/SNF in ExpansionTile (collapsed by default)
+□ Add "Auto-captured" badge to Date/Time section
+□ Add "Optional" badge to Quality section
+□ Reorder fields: Quantity & Rate at top
+□ Move Date/Time after Rate
+□ Move FAT/SNF after Date/Time
+```
+
+### **Smart Placeholders:**
+```
+□ Remove default "45.0" from rate field
+□ Fetch last entry on farmer selection
+□ Set hintText with previous values format: "Last: X"
+□ Style placeholder text (blue, italic, smaller font)
+□ On Enter/Tab with empty field, use previous value
+□ On form submit, use placeholder if field empty
+□ Show "Auto" badge when placeholder is active
+```
+
+### **Form Behavior:**
+```
+□ Rate field completely blank on first entry
+□ Quantity placeholder shows "Last: 18.5 L" on repeat entry
+□ Rate placeholder shows "Last: रु 65/L" on repeat entry
+□ FAT/SNF only expand if user clicks section
+□ Date/Time collapsed, expandable if backdating needed
+□ Enter key moves through: Quantity → Rate → (expand sections if needed)
+□ Save button always visible at bottom
+```
+
+---
+
+## 🧪 TESTING REQUIREMENTS
+```
+Test Scenario 1: First-time farmer entry
+✓ Rate field is blank (no "45.0")
+✓ All fields show generic placeholders ("Enter quantity", etc.)
+✓ Date/Time section collapsed
+✓ FAT/SNF section collapsed
+
+Test Scenario 2: Second entry for same farmer
+✓ Quantity placeholder shows "Last: [previous value]"
+✓ Rate placeholder shows "Last: रु [previous value]/L"
+✓ FAT/SNF placeholders show last values if previously entered
+✓ Press Enter on empty Quantity → uses placeholder value
+✓ Press Enter on empty Rate → uses placeholder value
+
+Test Scenario 3: Mobile size verification
+✓ All text readable on 360px wide screen
+✓ No horizontal scrolling
+✓ Form height ~550-600dp (fits most screens)
+✓ Touch targets minimum 48dp
+✓ Icons not too small (18-20dp minimum)
+
+Test Scenario 4: Expandable sections
+✓ Date/Time collapsed by default, expandable on tap
+✓ FAT/SNF collapsed by default, expandable on tap
+✓ Sections expand smoothly with animation
+✓ Can collapse back after expanding
+```
+
+---
+
+## 📦 FILES TO MODIFY
+```
+CREATE:
+lib/utils/mobile_sizes.dart (all mobile size constants)
+
+MODIFY:
+lib/screens/add_collection_screen.dart
+  - Apply MobileSizes throughout
+  - Implement ExpansionTile for Date/Time
+  - Implement ExpansionTile for FAT/SNF
+  - Add smart placeholder logic
+  - Remove default "45.0" from rate controller
+  - Reorder fields as specified
+
+lib/widgets/text_field_with_placeholder.dart (create reusable widget)
+  - Custom TextField that handles placeholders
+  - Auto-fill logic on Enter/Tab
+  - Visual badge for "Auto" state
+
+lib/controllers/milk_collection_controller.dart
+  - Add _previousQuantity, _previousRate variables
+  - Add _onFarmerSelected method
+  - Add smart submit logic (use placeholders if empty)
+```
+
+---
+
+## 🚀 SUCCESS CRITERIA
+```
+✅ Form height reduced by ~30% (more content visible)
+✅ All text readable on mobile (minimum 12sp)
+✅ Icons appropriately sized (18-20dp)
+✅ Date/Time collapsible (not always visible)
+✅ FAT/SNF collapsible (not always visible)
+✅ Rate field blank on first entry (no "45.0")
+✅ Smart placeholders show previous values
+✅ Enter on empty field uses placeholder value
+✅ Form feels clean, modern, uncluttered
+✅ Quick entry possible (skip to save button fast)
+✅ No confusion about default values
+✅ Works perfectly on 360px wide screen
+
+This prompt provides complete specifications for optimizing the Dairify mobile form. Implement these changes systematically, testing on actual mobile device after each phase.
